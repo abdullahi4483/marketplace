@@ -23,6 +23,7 @@ interface Product {
   images: string[]; category: string; location: string; lga: string
   seller: string; sellerId: string; rating: number; reviews: number
   description: string; inStock: boolean; tags: string[]
+  subcategory?: string; priceLabel?: string
 }
 
 interface Seller {
@@ -54,14 +55,43 @@ const LGAS = [
 ]
 
 const CATEGORIES = [
-  { id:"food",       name:"Food & Groceries",  nameHa:"Abinci & Masarufi", icon:"🥗",  img:"https://images.unsplash.com/photo-1543168256-418811576931?w=400&h=260&fit=crop&auto=format", count:342 },
-  { id:"fashion",    name:"Fashion",            nameHa:"Kayan Sawa",        icon:"👗",  img:"https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=260&fit=crop&auto=format", count:287 },
-  { id:"electronics",name:"Electronics",        nameHa:"Na'urori",          icon:"📱",  img:"https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=260&fit=crop&auto=format", count:195 },
-  { id:"agriculture",name:"Agriculture",        nameHa:"Noma",              icon:"🌾",  img:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=260&fit=crop&auto=format", count:418 },
-  { id:"furniture",  name:"Furniture",          nameHa:"Kayan Gida",        icon:"🛋️", img:"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=260&fit=crop&auto=format", count:124 },
-  { id:"crafts",     name:"Local Crafts",       nameHa:"Sana'o'in Gari",    icon:"🏺",  img:"https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=400&h=260&fit=crop&auto=format", count:203 },
-  { id:"services",   name:"Services",           nameHa:"Ayyuka",            icon:"🔧",  img:"https://images.unsplash.com/photo-1521791136064-7986c2920216?w=400&h=260&fit=crop&auto=format", count:156 },
-  { id:"realestate", name:"Real Estate",        nameHa:"Gidaje",            icon:"🏠",  img:"https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=260&fit=crop&auto=format", count:89  },
+  { id:"food",       name:"Provisions & Groceries",           nameHa:"Kayan Abinci",           icon:"🛒",  img:"https://images.unsplash.com/photo-1543168256-418811576931?w=400&h=260&fit=crop&auto=format", count:456 },
+  { id:"fashion",    name:"Boutiques & Ready-to-Wear",        nameHa:"Rumfar Kaya",            icon:"👔",  img:"https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=260&fit=crop&auto=format", count:312 },
+  { id:"electronics",name:"Electronics & Phones",             nameHa:"Na'urori & Wayoyi",      icon:"📱",  img:"https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=260&fit=crop&auto=format", count:267 },
+  { id:"agriculture",name:"Agricultural Inputs & Produce",    nameHa:"Kayan Noma",             icon:"🌾",  img:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=260&fit=crop&auto=format", count:523 },
+  { id:"furniture",  name:"Furniture & Home Goods",           nameHa:"Kayan Gida",             icon:"🛋️", img:"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=260&fit=crop&auto=format", count:178 },
+  { id:"crafts",     name:"Pottery & Craft",                  nameHa:"Tukwane & Sana'a",       icon:"🏺",  img:"https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=400&h=260&fit=crop&auto=format", count:245 },
+  { id:"services",   name:"Services",                         nameHa:"Ayyuka",                 icon:"🔧",  img:"https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=260&fit=crop&auto=format", count:210 },
+  { id:"fabric",     name:"Fabric & Textile",                 nameHa:"Auduga & Zare",          icon:"🧵", img:"https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=400&h=260&fit=crop&auto=format", count:156 },
+  { id:"building",   name:"Building Materials & Hardware",    nameHa:"Kayan Gini",             icon:"🔨", img:"https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=260&fit=crop&auto=format", count:234 },
+  { id:"pharmacy",   name:"Pharmacy & Medicine",              nameHa:"Magani",                 icon:"💊", img:"https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=260&fit=crop&auto=format", count:89 },
+  { id:"realestate", name:"Real Estate",                      nameHa:"Gidaje",                 icon:"🏠",  img:"https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=260&fit=crop&auto=format", count:89  },
+]
+
+const SERVICE_SUBCATEGORIES = [
+  { id:"tailoring",      name:"Tailoring & Fashion",        nameHa:"Dinki & Kayan Sawa",     icon:"✂️" },
+  { id:"plumbing",       name:"Plumbing",                   nameHa:"Famfo",                  icon:"🔧" },
+  { id:"electrical",     name:"Electrical",                 nameHa:"Lantarki",               icon:"⚡" },
+  { id:"carpentry",      name:"Carpentry & Furniture",      nameHa:"Kafinta",                icon:"🪵" },
+  { id:"masonry",        name:"Masonry & Construction",     nameHa:"Ginin Gida",             icon:"🧱" },
+  { id:"welding",        name:"Welding & Fabrication",      nameHa:"Ƙira",                   icon:"🔩" },
+  { id:"auto",           name:"Auto Mechanics",             nameHa:"Gyara Mota",             icon:"🚗" },
+  { id:"keke",           name:"Motorcycle/Keke Repair",     nameHa:"Gyara Keke",             icon:"🛵" },
+  { id:"phonerepair",    name:"Phone & Electronics Repair", nameHa:"Gyara Wayoyi",           icon:"📱" },
+  { id:"refrigeration",  name:"Refrigeration & AC",         nameHa:"Sanyi da AC",            icon:"❄️" },
+  { id:"beauty",         name:"Hair & Beauty",              nameHa:"Aski da Kyau",           icon:"💇" },
+  { id:"catering",       name:"Catering & Events",          nameHa:"Dafa Abinci",            icon:"🍽️" },
+  { id:"laundry",        name:"Laundry & Dry Cleaning",     nameHa:"Wanki",                  icon:"👕" },
+  { id:"cleaning",       name:"Cleaning Services",          nameHa:"Tsabtace",               icon:"🧹" },
+  { id:"shoe",           name:"Shoe & Leather Repair",      nameHa:"Takalmi",                icon:"👟" },
+  { id:"tutoring",       name:"Tutoring & Lessons",         nameHa:"Koyarwa",                icon:"📚" },
+  { id:"generator",      name:"Generator & Solar Tech",     nameHa:"Injin Lantarki",         icon:"⚙️" },
+  { id:"borehole",       name:"Borehole & Water Services",  nameHa:"Hakowa Rijiya",          icon:"💧" },
+  { id:"legal",          name:"Legal Services",             nameHa:"Lauyoyi",                icon:"⚖️" },
+  { id:"accounting",     name:"Accounting & Tax",           nameHa:"Akanta & Haraji",        icon:"📊" },
+  { id:"clinic",         name:"Clinics & Diagnostics",      nameHa:"Asibiti",                icon:"🏥" },
+  { id:"eventplanning",  name:"Event Planning",             nameHa:"Tsarin Biki",            icon:"🎪" },
+  { id:"propertymanagement", name:"Property Management",   nameHa:"Kula da Gini",           icon:"🏘️" },
 ]
 
 const PRODUCTS: Product[] = [
@@ -77,6 +107,40 @@ const PRODUCTS: Product[] = [
   { id:"p10", name:"Hausa Cap & Babbar Riga Set",  nameHa:"Tufafin Hausa (Cap da Riga)",     price:12500,  originalPrice:16000,  images:["https://images.unsplash.com/photo-1516762689617-e1cffcef479d?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"fashion",    location:"Minna",     lga:"Chanchaga",seller:"Minna Fashion House",sellerId:"s9", rating:4.7, reviews:91,  description:"Premium handmade Hausa cap set (cap + babbar riga) in fine embroidered fabric. Available in white, cream, sky blue, and green. Perfect for Sallah celebrations and traditional events.",                                                                    inStock:true,  tags:["cap","hausa","traditional","fashion","riga"] },
   { id:"p11", name:"Solar Panel System (500W)",    nameHa:"Wutar Rana (500W)",               price:185000, originalPrice:undefined,images:["https://images.unsplash.com/photo-1509391366360-2e959784a276?w=700&h=700&fit=crop&auto=format"],                                                                                                                                            category:"electronics",location:"Minna",     lga:"Bosso",     seller:"Minna Tech Store",  sellerId:"s4", rating:4.8, reviews:67,  description:"Complete 500W solar panel system with inverter, 200Ah batteries, and full installation support. Enough to power essential home appliances. Free installation within Minna metropolis.",                                                                        inStock:true,  tags:["solar","energy","electronics","power","renewable"] },
   { id:"p12", name:"Groundnut Oil (25 Litres)",    nameHa:"Mai Gyada (Lita 25)",             price:21000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=700&h=700&fit=crop&auto=format"],                                                                                                                                            category:"food",       location:"Bida",      lga:"Bida",      seller:"Niger Farm Direct", sellerId:"s3", rating:4.6, reviews:256, description:"Pure cold-pressed groundnut oil from Niger State farms. No additives or preservatives. 25-litre jerrycan. Great for cooking, frying, and salad dressing. Direct from the press.",                                                                          inStock:true,  tags:["oil","groundnut","cooking","food","natural"] },
+  { id:"p13", name:"Custom Kaftan Tailoring",      nameHa:"Dinki Agbada na Jiya",            price:8000,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"services", subcategory:"tailoring", location:"Minna",     lga:"Chanchaga",seller:"Minna Beauty & Bridal",sellerId:"s16", rating:4.6, reviews:87,  description:"Professional custom tailoring for traditional and modern kaftan, agbada, and embroidered wear. Expert embroidery work available. Consultation and fitting included. 2-week turnaround.",                                                           inStock:true,  tags:["tailoring","kaftan","embroidery","custom","fashion"] },
+  { id:"p14", name:"Plumbing Pipe & Fitting Repair", nameHa:"Gyara Famfo da Koyarwa",        price:12000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1581092162562-40038f56c17f?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"plumbing", location:"Minna",     lga:"Chanchaga",seller:"Minna Plumb & Pipe Works", sellerId:"s10", rating:4.7, reviews:156, description:"Professional plumbing services: pipe fitting, repair, and maintenance. Borehole servicing, water tank installation. Same-day service available. Guaranteed workmanship.",                                                                                  inStock:true,  tags:["plumbing","pipe","repair","maintenance","water"] },
+  { id:"p15", name:"Electrical Wiring per Room",    nameHa:"Wayan Lantarki",                 price:18000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1621905167918-48416bd8575a?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"electrical", location:"Minna",     lga:"Bosso",     seller:"Niger Sparkz Electrical", sellerId:"s11", rating:4.8, reviews:203, description:"Expert electrical wiring for new installations or renovations. Inverter and solar system setup. Generator servicing and repair. Licensed technician. 5-year warranty.",                                                                    inStock:true,  tags:["electrical","wiring","installation","inverter","solar"] },
+  { id:"p16", name:"Custom Wardrobe Carpentry",     nameHa:"Kafinta Akwati",                 price:55000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"carpentry", location:"Bida",      lga:"Bida",      seller:"Bida Master Carpentry", sellerId:"s12", rating:4.9, reviews:94,  description:"Handcrafted wooden wardrobes and furniture. Quality hardwood, modern designs. Custom measurements and finishes. Professional installation. 10-year durability guarantee.",                                                                             inStock:true,  tags:["carpentry","wardrobe","furniture","custom","woodwork"] },
+  { id:"p17", name:"Wall Tiling & Plaster Work",     nameHa:"Ginin Gida da Tiling",          price:28000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1582282613098-10b0c000f5d4?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"services", subcategory:"masonry", location:"Kontagora", lga:"Kontagora",  seller:"Kontagora Construction Co.", sellerId:"s13", rating:4.5, reviews:112, description:"Professional masonry, tiling, plastering, and wall finishing. Interior and exterior work. Quality cement and materials. On-time completion guaranteed.",                                                                                 inStock:true,  tags:["masonry","tiling","plaster","construction","interior"] },
+  { id:"p18", name:"Security Gate Fabrication",     nameHa:"Ita Karfe",                      price:45000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1565182999555-c71e3bac63e0?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"services", subcategory:"welding", location:"Bida",      lga:"Bida",      seller:"Bida Master Carpentry", sellerId:"s12", rating:4.7, reviews:68,  description:"Custom welded security gates, doors, and metal furniture. Durable burglary-proof designs. Rust-resistant finish. Professional installation included.",                                                                                                    inStock:true,  tags:["welding","gate","security","metal","fabrication"] },
+  { id:"p19", name:"Full Vehicle Service & Maintenance", nameHa:"Tunkaɗi Mota Gida", price:22000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1487730116645-74489c95b41b?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"services", subcategory:"auto", location:"Suleja",    lga:"Suleja",    seller:"Suleja Auto & Keke Centre", sellerId:"s14", rating:4.6, reviews:145, description:"Full vehicle maintenance: oil change, filter replacement, brake service, electrical checks. Expert mechanics. Genuine spare parts. Same-day service available.",                                                                        inStock:true,  tags:["auto","mechanics","service","repair","maintenance"] },
+  { id:"p20", name:"Motorcycle/Keke Full Overhaul", nameHa:"Tunkaɗi Keke",                  price:8500,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"services", subcategory:"keke", location:"Suleja",    lga:"Suleja",    seller:"Suleja Auto & Keke Centre", sellerId:"s14", rating:4.4, reviews:87,  description:"Professional motorcycle and tricycle (keke) servicing: engine overhaul, transmission repair, brake and electrical systems. Fast turnaround. Affordable rates.",                                                                                       inStock:true,  tags:["keke","motorcycle","repair","service","overhaul"] },
+  { id:"p21", name:"Phone Screen Repair & Replacement", nameHa:"Gyara Wayar Waje",         price:5500,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"phonerepair", location:"Minna",     lga:"Bosso",     seller:"NigerTech Repairs", sellerId:"s15", rating:4.8, reviews:234, description:"Fast phone screen repairs for all major brands. Quality parts, professional service. Also repair laptops, tablets, and small appliances. Same-day service.",                                                                                        inStock:true,  tags:["phone","repair","screen","electronics","service"] },
+  { id:"p22", name:"AC & Refrigerator Gas Service",  nameHa:"Sanyi da AC",                   price:18000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"refrigeration", location:"Minna",     lga:"Bosso",     seller:"NigerTech Repairs", sellerId:"s15", rating:4.6, reviews:98,  description:"Professional air conditioning and refrigeration servicing. Gas refill, compressor repair, filter cleaning. Fridge and freezer repairs. Quick response, reliable service.",                                                                                    inStock:true,  tags:["ac","refrigeration","service","gas","repair"] },
+  { id:"p23", name:"Hair Braiding & Styling",       nameHa:"Sanya da Aski",                  price:3500,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1559599810-46d1c52494ee?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"services", subcategory:"beauty", location:"Minna",     lga:"Chanchaga",seller:"Minna Beauty & Bridal", sellerId:"s16", rating:4.9, reviews:267, description:"Expert hair braiding, styling, and beauty services. Traditional and modern styles. Henna (lalle) and makeup services available. Professional results guaranteed.",                                                                      inStock:true,  tags:["beauty","hair","braiding","styling","makeup"] },
+  { id:"p24", name:"Event Catering (50 Pax)",        nameHa:"Dafa Abinci",                   price:95000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1555939594-58d7cb561af1?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"services", subcategory:"catering", location:"Minna",     lga:"Chanchaga",seller:"Alhaja Catering & Events", sellerId:"s17", rating:4.7, reviews:143, description:"Professional catering for weddings, events, and celebrations. Authentic Niger State cuisine and international dishes. Decoration and tableware included. Custom menu planning.",                                                                        inStock:true,  tags:["catering","events","food","celebration","catering"] },
+  { id:"p25", name:"Laundry Service per Kg",        nameHa:"Wanki da Tsantsa",               price:1800,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1524758870432-af53e3e371bb?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"services", subcategory:"laundry", location:"Minna",     lga:"Chanchaga",seller:"Alhaja Catering & Events", sellerId:"s17", rating:4.5, reviews:156, description:"Professional laundry and dry cleaning service. Minimum 5kg. Delicate fabric care, stain removal, pressing included. Pickup and delivery available. Quick turnaround.",                                                                        inStock:true,  tags:["laundry","cleaning","dry-clean","pressing","service"] },
+  { id:"p26", name:"Home Deep Cleaning Service",    nameHa:"Tsabtace Gida",                  price:28000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1581578731548-c64695c952952?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"cleaning", location:"Lavun",     lga:"Lavun",     seller:"Niger Clean Services", sellerId:"s18", rating:4.6, reviews:89,  description:"Professional home and office deep cleaning. Fumigation and pest control services. Eco-friendly products. Reliable and affordable. Flexible scheduling available.",                                                                                    inStock:true,  tags:["cleaning","home","fumigation","pest-control","service"] },
+  { id:"p27", name:"Shoe & Bag Restoration",        nameHa:"Takalmi da AikO",                price:2500,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1492707892657-8a91bde969e3?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"services", subcategory:"shoe", location:"Lavun",     lga:"Lavun",     seller:"Niger Clean Services", sellerId:"s18", rating:4.7, reviews:52,  description:"Professional shoe repair and restoration. Leather bag repair and cleaning. Expert craftsmanship. Quick turnaround at affordable rates. Quality guaranteed.",                                                                                         inStock:true,  tags:["shoe","repair","leather","bag","restoration"] },
+  { id:"p28", name:"WAEC & Exam Tutoring",          nameHa:"Koyarwa Karatun Jiya",           price:18000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1427504494785-405a6e29dcff?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"tutoring", location:"Minna",     lga:"Bosso",     seller:"Minna Tutors Network", sellerId:"s19", rating:4.8, reviews:121, description:"Expert tutoring for WAEC, NECO, and entrance exams. Mathematics, English, Science. Personalized lessons. Flexible schedule. Proven success rate. Home or office tuition.",                                                                                       inStock:true,  tags:["tutoring","education","exam-prep","lessons","learning"] },
+  { id:"p29", name:"Generator Service & Maintenance", nameHa:"Tunkaɗi Injin",               price:20000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"generator", location:"Minna",     lga:"Bosso",     seller:"Niger Sparkz Electrical", sellerId:"s11", rating:4.7, reviews:134, description:"Generator servicing, repair, and maintenance. Oil change, filter replacement, electrical checks. Preventive maintenance packages available.",                                                                                              inStock:true,  tags:["generator","service","maintenance","repair","energy"] },
+  { id:"p30", name:"Borehole Drilling 50m Deep",    nameHa:"Hakowa Rijiya",                 price:380000, originalPrice:undefined,images:["https://images.unsplash.com/photo-1581092918270-8cf3a3b61434?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"borehole", location:"Minna",     lga:"Chanchaga",seller:"Minna Plumb & Pipe Works", sellerId:"s10", rating:4.9, reviews:43,  description:"Professional borehole drilling and water supply installation. 50m depth, modern equipment. Includes pump and electrical installation. Guaranteed water quality testing.",                                                                    inStock:true,  tags:["borehole","water","drilling","installation","service"] },
+  { id:"p31", name:"Ankara Print Fabric (6yds)",      nameHa:"Auduga Print (Gaz 6)",           price:9500,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"fabric", location:"Bida",      lga:"Bida",      seller:"Bida Textile & Fabric Hub", sellerId:"s20", rating:4.8, reviews:67,  description:"Authentic African Ankara print fabric in vibrant colours. Premium quality, 100% cotton. Perfect for traditional and modern fashion. 6-yard length, ready for tailoring.",                                                               inStock:true,  tags:["ankara","fabric","print","textile","fashion"] },
+  { id:"p32", name:"Bida Hand-Woven Damask (5yds)",   nameHa:"Auduga Damask (Gaz 5)",          price:18000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=700&h=700&fit=crop&auto=format"],                                                                                                                                              category:"fabric", location:"Bida",      lga:"Bida",      seller:"Bida Textile & Fabric Hub", sellerId:"s20", rating:4.9, reviews:43,  description:"Exquisite Nupe hand-woven damask fabric showcasing traditional weaving artistry. Premium texture, sophisticated patterns. Ideal for special occasions and cultural events.",                                                              inStock:true,  tags:["damask","handwoven","nupe","traditional","fabric"] },
+  { id:"p33", name:"Swiss Lace Fabric (5yds)",        nameHa:"Auduga Lace Swiss (Gaz 5)",      price:35000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1445205170230-053b83016050?w=700&h=700&fit=crop&auto=format"],                                                                                                                                            category:"fabric", location:"Minna",     lga:"Chanchaga",seller:"Bida Textile & Fabric Hub", sellerId:"s20", rating:4.7, reviews:34,  description:"Premium Swiss lace fabric with intricate designs. Elegant and sophisticated. Perfect for bridal wear and formal occasions. 5-yard length, high quality.",                                                                            inStock:true,  tags:["lace","swiss","fabric","bridal","elegant"] },
+  { id:"p34", name:"Dangote Cement (50kg Bag)",       nameHa:"Simu Dangote (50kg)",            price:8500,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"building", location:"Minna",     lga:"Bosso",     seller:"Niger Building Supplies", sellerId:"s21", rating:4.6, reviews:156, description:"Quality Dangote Portland cement for construction. 50kg bags, perfect for building and concrete work. Authentic product, bulk discounts available for contractors.",                                                                   inStock:true,  tags:["cement","building","construction","materials","dangote"] },
+  { id:"p35", name:"Iron Rods 16mm (per Tonne)",      nameHa:"Baƙin Karfe (Tonne)",           price:720000, originalPrice:undefined,images:["https://images.unsplash.com/photo-1581092906957-8706000344c9?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"building", location:"Minna",     lga:"Bosso",     seller:"Niger Building Supplies", sellerId:"s21", rating:4.7, reviews:89,  description:"High-quality deformed iron rods 16mm diameter for structural reinforcement. Per tonne. Professional grade for construction projects. Reliable supplier for contractors.",                                                                     inStock:true,  tags:["iron-rods","building","construction","steel","rebar"] },
+  { id:"p36", name:"Long Span Aluminium Roofing",     nameHa:"Rufin Simu na Gida",             price:45000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1448375240586-882707db888b?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"building", location:"Suleja",    lga:"Suleja",    seller:"Niger Building Supplies", sellerId:"s21", rating:4.5, reviews:72,  description:"Durable long-span aluminium roofing sheets for residential and commercial buildings. Weather-resistant, easy installation. Professional finishing. Per sheet.",                                                                        inStock:true,  tags:["roofing","aluminium","building","sheets","construction"] },
+  { id:"p37", name:"Ceramic Floor Tiles (per Carton)", nameHa:"Tilo Ceramic (Carton)",        price:12500,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1578500494198-246f612d03b3?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"building", location:"Minna",     lga:"Bosso",     seller:"Niger Building Supplies", sellerId:"s21", rating:4.6, reviews:98,  description:"Premium ceramic floor tiles 60x60cm in various designs. Per carton (approximately 10 tiles). Excellent for homes and commercial spaces. Durable and easy to clean.",                                                                 inStock:true,  tags:["tiles","ceramic","flooring","building","construction"] },
+  { id:"p38", name:"Lonart DS Antimalarial (Blister)",  nameHa:"Lonart DS",                    price:2200,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"pharmacy", location:"Minna",     lga:"Chanchaga",seller:"Minna Pharmacy & Health", sellerId:"s22", rating:4.7, reviews:234, description:"Lonart DS antimalarial blister pack for malaria prevention and treatment. Recommended dosage, safe for adults. Certified and quality-assured. Available in single blister.",                                                              inStock:true,  tags:["antimalarial","malaria","medicine","pharmacy","health"] },
+  { id:"p39", name:"Vitamin C & Zinc Supplement",     nameHa:"Vitamin C & Zinc",               price:1800,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1587854692152-cbe660dbde0b?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"pharmacy", location:"Minna",     lga:"Chanchaga",seller:"Minna Pharmacy & Health", sellerId:"s22", rating:4.8, reviews:189, description:"High-potency Vitamin C and Zinc supplement tablets (60 tablets). Boosts immunity and supports overall health. Certified quality, safe for daily use. Recommended for all ages.",                                                           inStock:true,  tags:["vitamin-c","zinc","supplement","health","immunity"] },
+  { id:"p40", name:"Amlodipine 5mg Blood Pressure",    nameHa:"Amlodipine 5mg",                price:850,    originalPrice:undefined,images:["https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"pharmacy", location:"Minna",     lga:"Chanchaga",seller:"Minna Pharmacy & Health", sellerId:"s22", rating:4.6, reviews:112, description:"Amlodipine 5mg blood pressure medication tablet. Generic quality, effective for hypertension management. Per tablet. Consult pharmacist before use. Authentic product.",                                                                 inStock:true,  tags:["blood-pressure","medicine","amlodipine","pharmacy","health"] },
+  { id:"p41", name:"First Aid Kit (Home Complete)",    nameHa:"Kashi-kashi Gida",              price:6500,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1587854692152-cbe660dbde0b?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"pharmacy", location:"Minna",     lga:"Chanchaga",seller:"Minna Pharmacy & Health", sellerId:"s22", rating:4.9, reviews:156, description:"Complete home first aid kit with bandages, antiseptic, pain relief, thermometer, and emergency supplies. Ready-to-use. Essential for every household. Comprehensive coverage.",                                                              inStock:true,  tags:["first-aid","health","emergency","home","safety"] },
+  { id:"p42", name:"Legal Consultation (per Session)",   nameHa:"Zama da Lauya",                  price:25000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1552664730-d307ca884978?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"legal", location:"Minna",     lga:"Bosso",     seller:"Niger Legal & Accounting Group", sellerId:"s23", rating:4.8, reviews:87,  description:"Professional legal consultation for contracts, disputes, and corporate matters. Experienced lawyer. Confidential advice. Per-session rate. Same-day appointments available.",                                                          inStock:true,  tags:["legal","consultation","contract","lawyer","services"] },
+  { id:"p43", name:"Business Tax Filing & Returns",      nameHa:"Haraji da Akanta",               price:45000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1552664730-d307ca884978?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"accounting", location:"Minna",     lga:"Bosso",     seller:"Niger Legal & Accounting Group", sellerId:"s23", rating:4.7, reviews:56,  description:"Professional tax filing and business accounting. Corporate tax returns, bookkeeping, financial statements. Certified accountant. Compliant with FIRS requirements. Annual package.",                                        inStock:true,  tags:["accounting","tax","business","finance","services"] },
+  { id:"p44", name:"Medical Consultation & Lab Tests",   nameHa:"Binciken Asibiti",               price:5000,   originalPrice:undefined,images:["https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"clinic", location:"Minna",     lga:"Chanchaga",seller:"Minna Medical & Diagnostic Centre", sellerId:"s24", rating:4.9, reviews:234, description:"Professional medical consultation by certified doctors. Lab tests, diagnostics, prescriptions. Hygienic facilities, confidential results. Affordable healthcare quality. Referral available.",                                   inStock:true,  tags:["clinic","medical","consultation","diagnosis","health"] },
+  { id:"p45", name:"Full Event Planning & Coordination",  nameHa:"Shirya Biki",                    price:180000, originalPrice:undefined,images:["https://images.unsplash.com/photo-1555939594-58d7cb561af1?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"eventplanning", location:"Minna",     lga:"Chanchaga",seller:"Alhaja Catering & Events", sellerId:"s17", rating:4.7, reviews:45,  description:"Complete event planning and coordination: venue, catering, decoration, entertainment. Professional team. Weddings, corporate events, celebrations. Customized packages. On-site management.",                                         inStock:true,  tags:["event","planning","coordination","celebration","party"] },
+  { id:"p46", name:"Property Management (Monthly)",       nameHa:"Kula da Gida",                   price:35000,  originalPrice:undefined,images:["https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=700&h=700&fit=crop&auto=format"],                                                                                                                                             category:"services", subcategory:"propertymanagement", location:"Minna",     lga:"Bosso",     seller:"Niger Homes Agency", sellerId:"s8", rating:4.6, reviews:23,  description:"Professional property management: tenant screening, rent collection, maintenance coordination. Secure and reliable. Protect your investment. Monthly management fee. Flexible terms.",                                                inStock:true,  tags:["property","management","rental","real-estate","services"] },
 ]
 
 const SELLERS: Seller[] = [
@@ -85,6 +149,25 @@ const SELLERS: Seller[] = [
   { id:"s3", name:"Niger Farm Direct", avatar:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=900&h=300&fit=crop&auto=format", location:"Lavun, Niger State",     lga:"Lavun",     rating:4.6, totalSales:5234, products:134, verified:true, joined:"January 2019",  description:"Direct farm produce from Niger State's most fertile regions. Fresh, natural, and affordable. Supporting local farmers across 10+ LGAs.",                   phone:"+234 812 345 6789" },
   { id:"s4", name:"Minna Tech Store",  avatar:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1498049794561-7780e7231661?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Bosso",     rating:4.7, totalSales:3412, products:203, verified:true, joined:"September 2020","description":"Leading electronics retailer in Minna. Official resellers of Samsung, Tecno, and Infinix. All products come with full warranty.",                        phone:"+234 803 234 5678" },
   { id:"s5", name:"Kontagora Farms",   avatar:"https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=900&h=300&fit=crop&auto=format", location:"Kontagora, Niger State", lga:"Kontagora", rating:4.5, totalSales:1230, products:45,  verified:true, joined:"April 2021",    description:"Large-scale farm in Kontagora producing premium yams, cassava, and groundnuts. Supplying families and businesses across Niger State.",                     phone:"+234 807 567 8901" },
+  { id:"s6", name:"Niger State Express", avatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Chanchaga", rating:4.3, totalSales:892,  products:2,   verified:true, joined:"July 2022",      description:"Premium inter-city transport services connecting Niger State to major cities. Comfortable, air-conditioned vehicles with safety amenities.",                  phone:"+234 805 123 4567" },
+  { id:"s7", name:"Suleja Home Depot",  avatar:"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=900&h=300&fit=crop&auto=format", location:"Suleja, Niger State",    lga:"Suleja",    rating:4.4, totalSales:156,  products:12,  verified:true, joined:"May 2021",       description:"Quality furniture and home furnishings for modern living spaces. Custom designs available. Delivery and assembly included.",                              phone:"+234 807 234 5678" },
+  { id:"s8", name:"Niger Homes Agency", avatar:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Bosso",     rating:4.6, totalSales:47,   products:18,  verified:true, joined:"August 2020",   description:"Professional real estate services across Niger State. Residential, commercial, and land properties. Transparent pricing, legal documentation.",                  phone:"+234 803 567 8901" },
+  { id:"s9", name:"Minna Fashion House", avatar:"https://images.unsplash.com/photo-1516762689617-e1cffcef479d?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1445205170230-053b83016050?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Chanchaga", rating:4.7, totalSales:234,  products:23,  verified:true, joined:"February 2021",  description:"Premium traditional and modern fashion for men and women. Hausa caps, agbada, and embroidered wear. Expert tailoring services available.",                   phone:"+234 806 456 7890" },
+  { id:"s10", name:"Minna Plumb & Pipe Works", avatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1581092162562-40038f56c17f?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Chanchaga", rating:4.7, totalSales:412,  products:19,  verified:true, joined:"January 2020",  description:"Expert plumbing and water services. Pipe fitting, borehole drilling, water tank installation. Quality materials, guaranteed workmanship.",                  phone:"+234 803 789 0123" },
+  { id:"s11", name:"Niger Sparkz Electrical", avatar:"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1621905167918-48416bd8575a?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Bosso",     rating:4.8, totalSales:578,  products:20,  verified:true, joined:"March 2020",    description:"Professional electrical installation, repairs, and maintenance. Solar and inverter systems, generator servicing. Licensed technician.",                   phone:"+234 809 234 5678" },
+  { id:"s12", name:"Bida Master Carpentry", avatar:"https://images.unsplash.com/photo-1516762689617-e1cffcef479d?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&h=300&fit=crop&auto=format", location:"Bida, Niger State",      lga:"Bida",      rating:4.9, totalSales:334,  products:17,  verified:true, joined:"November 2019", description:"Master carpenter offering custom woodwork, furniture making, and welding services. Quality hardwood, modern designs, professional installation.",           phone:"+234 807 789 0123" },
+  { id:"s13", name:"Kontagora Construction Co.", avatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1582282613098-10b0c000f5d4?w=900&h=300&fit=crop&auto=format", location:"Kontagora, Niger State", lga:"Kontagora", rating:4.5, totalSales:289,  products:8,   verified:true, joined:"June 2021",     description:"Full masonry and construction services. Bricklaying, plastering, tiling, painting. Quality materials and professional team.",                            phone:"+234 805 456 7890" },
+  { id:"s14", name:"Suleja Auto & Keke Centre", avatar:"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1487730116645-74489c95b41b?w=900&h=300&fit=crop&auto=format", location:"Suleja, Niger State",    lga:"Suleja",    rating:4.6, totalSales:267,  products:12,  verified:true, joined:"August 2021",   description:"Expert auto mechanics and motorcycle/tricycle repair. Full vehicle servicing, engine work, transmission repair. Quick turnaround.",                        phone:"+234 808 567 8901" },
+  { id:"s15", name:"NigerTech Repairs",  avatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Bosso",     rating:4.8, totalSales:512,  products:16,  verified:true, joined:"April 2020",    description:"Phone, laptop, and electronics repair specialists. Screen replacement, component repair, data recovery. Professional service, fast turnaround.",       phone:"+234 809 678 9012" },
+  { id:"s16", name:"Minna Beauty & Bridal", avatar:"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1559599810-46d1c52494ee?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Chanchaga", rating:4.9, totalSales:623,  products:18,  verified:true, joined:"September 2019", description:"Professional beauty, hair, and bridal services. Hairstyling, makeup, henna application, tailoring. Expert team for special occasions.",                    phone:"+234 810 789 0123" },
+  { id:"s17", name:"Alhaja Catering & Events", avatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1555939594-58d7cb561af1?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Chanchaga", rating:4.7, totalSales:445,  products:14,  verified:true, joined:"October 2020",  description:"Full event catering and planning services. Traditional and modern cuisine, decoration, rental equipment. Expert team for all occasions.",                   phone:"+234 811 234 5678" },
+  { id:"s18", name:"Niger Clean Services", avatar:"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1581078726764-5f780e6a0e39?w=900&h=300&fit=crop&auto=format", location:"Lavun, Niger State",     lga:"Lavun",     rating:4.6, totalSales:198,  products:9,   verified:true, joined:"January 2022",  description:"Professional cleaning and maintenance services. Home and office cleaning, fumigation, pest control, shoe repair. Eco-friendly products.",                   phone:"+234 812 345 6789" },
+  { id:"s19", name:"Minna Tutors Network",  avatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1427504494785-405a6e29dcff?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Bosso",     rating:4.8, totalSales:356,  products:11,  verified:true, joined:"February 2021",  description:"Expert tutors for WAEC, NECO, and entrance exam preparation. Mathematics, English, Science. Personalized lessons, proven success.",                       phone:"+234 813 456 7890" },
+  { id:"s20", name:"Bida Textile & Fabric Hub", avatar:"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=900&h=300&fit=crop&auto=format", location:"Bida, Niger State",      lga:"Bida",      rating:4.8, totalSales:478,  products:24,  verified:true, joined:"May 2020",      description:"Premium fabrics and textiles featuring traditional Nupe weaving. Ankara, lace, damask, and Swiss fabrics. Custom orders welcome. Supporting local weavers.",                           phone:"+234 814 567 8901" },
+  { id:"s21", name:"Niger Building Supplies",   avatar:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Bosso",     rating:4.6, totalSales:892,  products:31,  verified:true, joined:"January 2019", description:"Quality building materials and hardware. Cement, iron rods, tiles, roofing sheets, paint. Bulk discounts available. Professional contractors welcome.",                           phone:"+234 815 678 9012" },
+  { id:"s22", name:"Minna Pharmacy & Health",   avatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Chanchaga", rating:4.7, totalSales:612,  products:28,  verified:true, joined:"June 2021",     description:"Licensed pharmacy with quality medicines, vitamins, and first aid supplies. Expert pharmacist consultation. Fast delivery within Minna. Health insurance accepted.",                  phone:"+234 816 789 0123" },
+  { id:"s23", name:"Niger Legal & Accounting Group", avatar:"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1552664730-d307ca884978?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Bosso",     rating:4.8, totalSales:234,  products:15,  verified:true, joined:"March 2020",    description:"Professional legal and accounting services. Corporate registration, contract review, tax filing, bookkeeping. Experienced lawyers and chartered accountants. Confidential consultation.",                                  phone:"+234 817 890 1234" },
+  { id:"s24", name:"Minna Medical & Diagnostic Centre", avatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format", banner:"https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&h=300&fit=crop&auto=format", location:"Minna, Niger State",     lga:"Chanchaga", rating:4.9, totalSales:445,  products:12,  verified:true, joined:"January 2021",  description:"Modern medical clinic with certified professionals. Lab tests, diagnostics, consultations. Hygienic facilities, confidential results. Affordable healthcare with quality service.",                            phone:"+234 818 901 2345" },
 ]
 
 const SALES_DATA = [
@@ -226,7 +309,15 @@ function ProductCard({ product }: { product: Product }) {
       <div className="p-3 flex flex-col gap-1.5 flex-1">
         <div className="flex items-center gap-1">
           <Badge className="bg-green-100 text-green-800">
-            {CATEGORIES.find(c => c.id === product.category)?.icon} {lang === "ha" ? CATEGORIES.find(c => c.id === product.category)?.nameHa : CATEGORIES.find(c => c.id === product.category)?.name}
+            {product.subcategory ? (
+              <>
+                {SERVICE_SUBCATEGORIES.find(s => s.id === product.subcategory)?.icon} {lang === "ha" ? SERVICE_SUBCATEGORIES.find(s => s.id === product.subcategory)?.nameHa : SERVICE_SUBCATEGORIES.find(s => s.id === product.subcategory)?.name}
+              </>
+            ) : (
+              <>
+                {CATEGORIES.find(c => c.id === product.category)?.icon} {lang === "ha" ? CATEGORIES.find(c => c.id === product.category)?.nameHa : CATEGORIES.find(c => c.id === product.category)?.name}
+              </>
+            )}
           </Badge>
         </div>
         <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug cursor-pointer hover:text-green-700 transition-colors" onClick={() => nav(`/products/${product.id}`)}>
@@ -244,7 +335,11 @@ function ProductCard({ product }: { product: Product }) {
           {product.originalPrice && <span className="text-xs text-gray-400 line-through">{fmt(product.originalPrice)}</span>}
         </div>
         <Btn variant="primary" className="w-full text-xs py-2" onClick={() => addToCart(product)} disabled={!product.inStock}>
-          <ShoppingCart size={13} /> {tr("Add to Cart", lang)}
+          {product.category === "services" ? (
+            <><Zap size={13} /> {tr("Book Service", lang)}</>
+          ) : (
+            <><ShoppingCart size={13} /> {tr("Add to Cart", lang)}</>
+          )}
         </Btn>
       </div>
     </div>
@@ -256,7 +351,6 @@ function ProductCard({ product }: { product: Product }) {
 function Navbar() {
   const { lang, setLang, cartCount, wishlist, isLoggedIn, user, setIsLoggedIn, setUser, searchQ, setSearchQ } = useApp()
   const [open, setOpen] = useState(false)
-  const [catOpen, setCatOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
   const nav = useNavigate()
   const loc = useLocation()
@@ -346,34 +440,6 @@ function Navbar() {
           </div>
         </div>
 
-        {/* Category bar (desktop) */}
-        <div className="hidden md:flex items-center gap-1 pb-2 border-t border-green-50 pt-1 overflow-x-auto scrollbar-none">
-          <div className="relative">
-            <button onClick={() => setCatOpen(!catOpen)} className="flex items-center gap-1 px-3 py-1 text-sm font-medium text-green-800 hover:bg-green-50 rounded-lg transition-colors whitespace-nowrap">
-              <Grid size={13} /> {tr("All Categories", lang)} <ChevronDown size={12} />
-            </button>
-            {catOpen && (
-              <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-xl shadow-xl border border-green-100 py-1 z-50">
-                {CATEGORIES.map(c => (
-                  <Link key={c.id} to={`/products?category=${c.id}`} onClick={() => setCatOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
-                    <span className="text-base">{c.icon}</span>
-                    <span>{lang === "ha" ? c.nameHa : c.name}</span>
-                    <span className="ml-auto text-xs text-gray-400">{c.count}</span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-          {CATEGORIES.slice(0, 7).map(c => (
-            <Link key={c.id} to={`/products?category=${c.id}`} className={`flex items-center gap-1 px-3 py-1 text-sm rounded-lg transition-colors whitespace-nowrap ${loc.search.includes(c.id) ? "bg-green-700 text-white" : "text-gray-600 hover:bg-green-50 hover:text-green-700"}`}>
-              {c.icon} {lang === "ha" ? c.nameHa : c.name}
-            </Link>
-          ))}
-          <Link to="/auth?mode=seller" className="ml-auto flex items-center gap-1 px-3 py-1 text-sm font-semibold text-amber-700 hover:bg-amber-50 rounded-lg transition-colors whitespace-nowrap">
-            <Store size={13} /> {tr("Sell on NigerMart", lang)}
-          </Link>
-        </div>
       </div>
 
       {/* Mobile menu */}
@@ -571,7 +637,7 @@ function HomePage() {
           </div>
           <Link to="/products" className="text-sm font-semibold text-green-700 hover:text-green-800 flex items-center gap-1">View All <ChevronRight size={14} /></Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
           {CATEGORIES.map(cat => (
             <Link key={cat.id} to={`/products?category=${cat.id}`} className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-white border border-green-100 hover:border-green-400 hover:shadow-md transition-all duration-300 text-center">
               <div className="w-12 h-12 rounded-xl overflow-hidden bg-green-50 relative">
@@ -603,6 +669,25 @@ function HomePage() {
               <p className="text-green-200 text-sm">Yam, rice, groundnuts & more</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Browse Services */}
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">⭐ Browse by Service Type</h2>
+            <p className="text-gray-500 text-sm">Find skilled artisans & professionals across Niger State</p>
+          </div>
+          <Link to="/products?category=services" className="text-sm font-semibold text-green-700 hover:text-green-800 flex items-center gap-1">View All Services <ChevronRight size={14} /></Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+          {SERVICE_SUBCATEGORIES.map(s => (
+            <Link key={s.id} to={`/products?category=services&subcategory=${s.id}`} className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-white border border-green-100 hover:border-green-400 hover:shadow-md transition-all duration-300 text-center">
+              <div className="text-4xl group-hover:scale-110 transition-transform duration-300">{s.icon}</div>
+              <span className="text-xs font-semibold text-gray-700 group-hover:text-green-700 transition-colors">{lang === "ha" ? s.nameHa : s.name}</span>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -706,6 +791,7 @@ function ProductListingPage() {
 
   const [selectedCat, setSelectedCat] = useState(params.get("category") || "")
   const [selectedLGA, setSelectedLGA] = useState(params.get("lga") || "")
+  const [selectedSubcat, setSelectedSubcat] = useState(params.get("subcategory") || "")
   const [priceMax, setPriceMax] = useState(500000)
   const [minRating, setMinRating] = useState(0)
   const [sortBy, setSortBy] = useState("featured")
@@ -716,6 +802,7 @@ function ProductListingPage() {
 
   const filtered = PRODUCTS.filter(p => {
     if (selectedCat && p.category !== selectedCat) return false
+    if (selectedCat === "services" && selectedSubcat && p.subcategory !== selectedSubcat) return false
     if (selectedLGA && p.lga !== selectedLGA) return false
     if (p.price > priceMax) return false
     if (p.rating < minRating) return false
@@ -765,6 +852,23 @@ function ProductListingPage() {
         </select>
       </div>
 
+      {selectedCat === "services" && (
+        <div>
+          <h4 className="font-semibold text-gray-900 text-sm mb-2">Service Type</h4>
+          <div className="flex flex-wrap gap-1.5">
+            <button onClick={() => { setSelectedSubcat(""); setPage(1) }} className={`px-2.5 py-1.5 rounded-lg text-xs transition-colors ${!selectedSubcat ? "bg-green-700 text-white" : "border border-green-200 text-gray-600 hover:bg-green-50"}`}>
+              All
+            </button>
+            {SERVICE_SUBCATEGORIES.map(s => (
+              <button key={s.id} onClick={() => { setSelectedSubcat(s.id); setPage(1) }}
+                className={`px-2.5 py-1.5 rounded-lg text-xs flex items-center gap-1 transition-colors ${selectedSubcat === s.id ? "bg-green-700 text-white" : "border border-green-200 text-gray-600 hover:bg-green-50"}`}>
+                {s.icon} {s.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div>
         <h4 className="font-semibold text-gray-900 text-sm mb-2">Min Rating</h4>
         <div className="flex gap-1">
@@ -777,7 +881,7 @@ function ProductListingPage() {
         </div>
       </div>
 
-      <Btn variant="outline" className="w-full text-sm" onClick={() => { setSelectedCat(""); setSelectedLGA(""); setPriceMax(500000); setMinRating(0); setPage(1) }}>
+      <Btn variant="outline" className="w-full text-sm" onClick={() => { setSelectedCat(""); setSelectedLGA(""); setSelectedSubcat(""); setPriceMax(500000); setMinRating(0); setPage(1) }}>
         Clear All Filters
       </Btn>
     </div>
@@ -790,22 +894,14 @@ function ProductListingPage() {
         {selectedCat && <><ChevronRight size={12}/><span className="text-gray-900">{CATEGORIES.find(c => c.id === selectedCat)?.name}</span></>}
       </div>
 
-      <div className="flex gap-6">
-        {/* Sidebar - desktop */}
-        <aside className="hidden md:block w-56 shrink-0">
-          <div className="bg-white rounded-xl border border-green-100 p-4 sticky top-20">
-            <FilterPanel />
-          </div>
-        </aside>
-
-        {/* Main */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 mb-4 flex-wrap">
-            <span className="text-sm text-gray-500">{filtered.length} products found</span>
-            <div className="ml-auto flex items-center gap-2">
-              <button onClick={() => setShowFilter(!showFilter)} className="md:hidden flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-green-200 text-green-700 hover:bg-green-50">
-                <Filter size={14}/> Filter
-              </button>
+      {/* Main - Full Width */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
+          <span className="text-sm text-gray-500">{filtered.length} products found</span>
+          <div className="ml-auto flex items-center gap-2">
+            <button onClick={() => setShowFilter(!showFilter)} className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-green-200 text-green-700 hover:bg-green-50">
+              <Filter size={14}/> Filter
+            </button>
               <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="text-sm rounded-lg border border-green-200 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-700">
                 <option value="featured">Featured</option>
                 <option value="price-asc">Price: Low to High</option>
@@ -819,12 +915,24 @@ function ProductListingPage() {
             </div>
           </div>
 
-          {/* Mobile filter */}
-          {showFilter && (
-            <div className="md:hidden bg-white rounded-xl border border-green-100 p-4 mb-4">
-              <FilterPanel />
+        {/* Filter Drawer - All devices */}
+        {showFilter && (
+          <div className="fixed inset-0 z-50 overflow-hidden">
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/50" onClick={() => setShowFilter(false)} />
+
+            {/* Drawer */}
+            <div className="absolute right-0 top-0 bottom-0 w-full sm:w-80 bg-white shadow-lg overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b border-green-100 px-4 py-3 flex items-center justify-between">
+                <h3 className="font-semibold text-gray-900">Filters</h3>
+                <button onClick={() => setShowFilter(false)} className="p-1 hover:bg-green-50 rounded-lg"><X size={20} className="text-gray-600"/></button>
+              </div>
+              <div className="p-4">
+                <FilterPanel />
+              </div>
             </div>
-          )}
+          </div>
+        )}
 
           {paginated.length > 0 ? (
             <div className={viewMode === "grid" ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4" : "space-y-3"}>
@@ -861,7 +969,6 @@ function ProductListingPage() {
               <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)} className="p-2 rounded-lg border border-green-200 disabled:opacity-40 hover:bg-green-50 transition-colors"><ChevronRight size={16}/></button>
             </div>
           )}
-        </div>
       </div>
     </div>
   )
@@ -959,12 +1066,25 @@ function ProductDetailPage() {
           </div>
 
           <div className="flex gap-3 mb-6">
-            <Btn variant="primary" className="flex-1 py-3" onClick={() => { for(let i = 0; i < qty; i++) addToCart(product); nav("/cart") }} disabled={!product.inStock}>
-              <ShoppingCart size={16}/> {tr("Buy Now", lang)}
-            </Btn>
-            <Btn variant="outline" className="flex-1 py-3" onClick={() => { for(let i = 0; i < qty; i++) addToCart(product) }} disabled={!product.inStock}>
-              <ShoppingCart size={16}/> {tr("Add to Cart", lang)}
-            </Btn>
+            {product.category === "services" ? (
+              <>
+                <Btn variant="primary" className="flex-1 py-3" onClick={() => { for(let i = 0; i < qty; i++) addToCart(product); nav("/cart") }} disabled={!product.inStock}>
+                  <Zap size={16}/> {tr("Book Service", lang)}
+                </Btn>
+                <Btn variant="outline" className="flex-1 py-3" onClick={() => { for(let i = 0; i < qty; i++) addToCart(product) }} disabled={!product.inStock}>
+                  <MessageCircle size={16}/> {tr("Get a Quote", lang)}
+                </Btn>
+              </>
+            ) : (
+              <>
+                <Btn variant="primary" className="flex-1 py-3" onClick={() => { for(let i = 0; i < qty; i++) addToCart(product); nav("/cart") }} disabled={!product.inStock}>
+                  <ShoppingCart size={16}/> {tr("Buy Now", lang)}
+                </Btn>
+                <Btn variant="outline" className="flex-1 py-3" onClick={() => { for(let i = 0; i < qty; i++) addToCart(product) }} disabled={!product.inStock}>
+                  <ShoppingCart size={16}/> {tr("Add to Cart", lang)}
+                </Btn>
+              </>
+            )}
           </div>
 
           {/* Seller card */}
@@ -988,21 +1108,27 @@ function ProductDetailPage() {
                   <a href={`tel:${seller.phone}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1 text-xs bg-green-700 text-white px-2.5 py-1.5 rounded-lg hover:bg-green-800 transition-colors">
                     <Phone size={11}/> Call
                   </a>
-                  <button className="flex items-center gap-1 text-xs border border-green-300 text-green-700 px-2.5 py-1.5 rounded-lg hover:bg-green-50 transition-colors">
-                    <MessageCircle size={11}/> Chat
-                  </button>
+                  {product.category === "services" && (
+                    <a href={`https://wa.me/${seller.phone.replace(/[^0-9]/g,"")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="flex items-center gap-1 text-xs bg-green-600 text-white px-2.5 py-1.5 rounded-lg hover:bg-green-700 transition-colors">
+                      <MessageCircle size={11}/> WhatsApp
+                    </a>
+                  )}
                 </div>
               </div>
             </Link>
           )}
 
-          {/* Delivery info */}
+          {/* Delivery/Service info */}
           <div className="mt-4 bg-green-50 rounded-xl p-4 grid grid-cols-3 gap-3 text-center">
-            {[
+            {(product.category === "services" ? [
+              { icon:<Zap size={18} className="text-green-700"/>, label:"Service Visit", sub:"Arranged" },
+              { icon:<Shield size={18} className="text-green-700"/>, label:"Verified", sub:"Professionals" },
+              { icon:<Award size={18} className="text-green-700"/>, label:"Rated", sub:"& Reviewed" },
+            ] : [
               { icon:<Truck size={18} className="text-green-700"/>, label:"Fast Delivery", sub:"24–48 hrs" },
               { icon:<Shield size={18} className="text-green-700"/>, label:"Buyer Protection", sub:"100% Secure" },
               { icon:<Award size={18} className="text-green-700"/>, label:"Authentic", sub:"Verified Seller" },
-            ].map((item, i) => (
+            ]).map((item, i) => (
               <div key={i} className="flex flex-col items-center gap-1">
                 {item.icon}
                 <span className="text-xs font-semibold text-gray-700">{item.label}</span>
