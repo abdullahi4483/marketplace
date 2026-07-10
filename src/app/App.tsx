@@ -12,6 +12,8 @@ import {
   Tag, Clock, Award, Shield, MessageCircle, Home, Zap, ChevronUp,
   Check, CreditCard, Eye, Lock, Leaf, AlertCircle
 } from "lucide-react"
+import VendorModule from "./vendor/VendorModule"
+import BuyerModule from "./buyer/BuyerModule"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -44,6 +46,8 @@ interface AppCtx {
   user: { name: string; role: UserRole } | null
   setUser: (u: { name: string; role: UserRole } | null) => void
   searchQ: string; setSearchQ: (q: string) => void
+  currentSellerId: string | null; setCurrentSellerId: (id: string | null) => void
+  sellerData: Seller | null; setSellerData: (s: Seller | null) => void
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -220,6 +224,8 @@ function AppProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<{ name: string; role: UserRole } | null>(null)
   const [searchQ, setSearchQ] = useState("")
+  const [currentSellerId, setCurrentSellerId] = useState<string | null>(null)
+  const [sellerData, setSellerData] = useState<Seller | null>(null)
 
   const addToCart = (p: Product) =>
     setCart(prev => prev.find(i => i.id === p.id)
@@ -238,7 +244,7 @@ function AppProvider({ children }: { children: React.ReactNode }) {
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0)
 
   return (
-    <Ctx.Provider value={{ lang, setLang, cart, addToCart, removeFromCart, updateQty, cartTotal, cartCount, wishlist, toggleWishlist, isLoggedIn, setIsLoggedIn, user, setUser, searchQ, setSearchQ }}>
+    <Ctx.Provider value={{ lang, setLang, cart, addToCart, removeFromCart, updateQty, cartTotal, cartCount, wishlist, toggleWishlist, isLoggedIn, setIsLoggedIn, user, setUser, searchQ, setSearchQ, currentSellerId, setCurrentSellerId, sellerData, setSellerData }}>
       {children}
     </Ctx.Provider>
   )
@@ -349,16 +355,9 @@ function ProductCard({ product }: { product: Product }) {
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
 function Navbar() {
-  const { lang, setLang, cartCount, wishlist, isLoggedIn, user, setIsLoggedIn, setUser, searchQ, setSearchQ } = useApp()
+  const { lang, setLang, isLoggedIn, user, setIsLoggedIn, setUser, setCurrentSellerId, setSellerData } = useApp()
   const [open, setOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
-  const nav = useNavigate()
-  const loc = useLocation()
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQ.trim()) { nav(`/search?q=${encodeURIComponent(searchQ)}`); setOpen(false) }
-  }
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b-2 border-green-700 shadow-sm">
@@ -372,38 +371,12 @@ function Navbar() {
             <span className="text-lg font-black text-green-800 tracking-tight hidden sm:block">Niger<span className="text-amber-500">Mart</span></span>
           </Link>
 
-          {/* Search */}
-          <form onSubmit={handleSearch} className="flex-1 max-w-2xl hidden md:flex items-center">
-            <div className="flex w-full rounded-xl border-2 border-green-200 focus-within:border-green-600 overflow-hidden bg-green-50 transition-colors">
-              <input
-                value={searchQ} onChange={e => setSearchQ(e.target.value)}
-                placeholder={tr("Search products...", lang)}
-                className="flex-1 px-4 py-2.5 text-sm bg-transparent outline-none text-gray-800 placeholder:text-gray-400"
-              />
-              <button type="submit" className="bg-green-700 text-white px-4 py-2.5 hover:bg-green-800 transition-colors flex items-center gap-1.5 text-sm font-medium">
-                <Search size={15} /> <span className="hidden lg:inline">Search</span>
-              </button>
-            </div>
-          </form>
-
           {/* Right actions */}
-          <div className="flex items-center gap-1 ml-auto md:ml-0">
+          <div className="flex items-center gap-3 ml-auto">
             {/* Language toggle */}
             <button onClick={() => setLang(lang === "en" ? "ha" : "en")} className="hidden md:flex items-center gap-1 text-xs font-bold px-2 py-1.5 rounded-lg border border-green-200 hover:bg-green-50 text-green-700 transition-colors">
               <Globe size={12} /> {lang === "en" ? "HA" : "EN"}
             </button>
-
-            {/* Wishlist */}
-            <Link to="/dashboard?tab=wishlist" className="relative p-2 rounded-lg hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors">
-              <Heart size={20} />
-              {wishlist.length > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{wishlist.length}</span>}
-            </Link>
-
-            {/* Cart */}
-            <Link to="/cart" className="relative p-2 rounded-lg hover:bg-green-50 text-gray-600 hover:text-green-700 transition-colors">
-              <ShoppingCart size={20} />
-              {cartCount > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{cartCount}</span>}
-            </Link>
 
             {/* User */}
             {isLoggedIn && user ? (
@@ -423,7 +396,7 @@ function Navbar() {
                     {user.role === "seller" && <Link to="/seller-dashboard" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"><Store size={14}/> Seller Panel</Link>}
                     {user.role === "admin" && <Link to="/admin" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"><Shield size={14}/> Admin Panel</Link>}
                     <Link to="/dashboard?tab=settings" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"><Settings size={14}/> Settings</Link>
-                    <button onClick={() => { setIsLoggedIn(false); setUser(null); setUserOpen(false) }} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"><LogOut size={14}/> Logout</button>
+                    <button onClick={() => { setIsLoggedIn(false); setUser(null); setCurrentSellerId(null); setSellerData(null); setUserOpen(false) }} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"><LogOut size={14}/> Logout</button>
                   </div>
                 )}
               </div>
@@ -445,10 +418,6 @@ function Navbar() {
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden border-t border-green-100 bg-white px-4 py-4 space-y-3">
-          <form onSubmit={handleSearch} className="flex rounded-xl border-2 border-green-200 overflow-hidden">
-            <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder={tr("Search products...", lang)} className="flex-1 px-3 py-2 text-sm bg-green-50 outline-none" />
-            <button type="submit" className="bg-green-700 text-white px-4 py-2"><Search size={15} /></button>
-          </form>
           <div className="grid grid-cols-4 gap-2">
             {CATEGORIES.map(c => (
               <Link key={c.id} to={`/products?category=${c.id}`} onClick={() => setOpen(false)}
@@ -555,7 +524,7 @@ function Footer() {
 // ─── HomePage ─────────────────────────────────────────────────────────────────
 
 function HomePage() {
-  const { lang, addToCart } = useApp()
+  const { lang } = useApp()
   const nav = useNavigate()
   const [slide, setSlide] = useState(0)
 
@@ -570,13 +539,10 @@ function HomePage() {
     return () => clearInterval(t)
   }, [])
 
-  const featured = PRODUCTS.slice(0, 8)
-  const topSellers = SELLERS.slice(0, 4)
-
   return (
-    <div className="min-h-screen">
+    <div>
       {/* Hero */}
-      <div className="relative h-[420px] md:h-[500px] overflow-hidden bg-green-900">
+      <div className="relative h-screen overflow-hidden bg-green-900">
         {slides.map((s, i) => (
           <div key={i} className={`absolute inset-0 transition-opacity duration-1000 ${i === slide ? "opacity-100" : "opacity-0"}`}>
             <img src={s.img} alt="" className="w-full h-full object-cover" />
@@ -595,8 +561,11 @@ function HomePage() {
                 <Btn variant="gold" className="px-6 py-3 text-base" onClick={() => nav(slides[slide].link)}>
                   {slides[slide].cta} <ArrowRight size={16} />
                 </Btn>
-                <Btn variant="outline" className="px-6 py-3 text-base border-white text-white hover:bg-white/10" onClick={() => nav("/auth?mode=seller")}>
+                <Btn variant="outline" className="px-6 py-3 text-base border-white text-white hover:bg-white/10" onClick={() => nav("/vendor-auth?mode=seller")}>
                   <Store size={16} /> Start Selling
+                </Btn>
+                <Btn variant="outline" className="px-6 py-3 text-base border-white text-white hover:bg-white/10" onClick={() => nav("/vendor-auth?mode=seller")}>
+                  <User size={16} /> Vendor Login
                 </Btn>
               </div>
             </div>
@@ -611,172 +580,6 @@ function HomePage() {
         <button onClick={() => setSlide(s => (s - 1 + slides.length) % slides.length)} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors"><ChevronLeft size={20} /></button>
         <button onClick={() => setSlide(s => (s + 1) % slides.length)} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors"><ChevronRight size={20} /></button>
       </div>
-
-      {/* Trust badges */}
-      <div className="bg-green-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-center gap-8 overflow-x-auto scrollbar-none text-sm">
-            {[
-              { icon:<Shield size={14}/>, text:"Verified Sellers" },
-              { icon:<Truck size={14}/>, text:"Delivery Across Niger State" },
-              { icon:<CreditCard size={14}/>, text:"Secure Payment" },
-              { icon:<MessageCircle size={14}/>, text:"24/7 Customer Support" },
-            ].map((b, i) => (
-              <span key={i} className="flex items-center gap-1.5 font-medium whitespace-nowrap text-green-100"><span className="text-amber-400">{b.icon}</span>{b.text}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Categories */}
-      <section className="max-w-7xl mx-auto px-4 py-10">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">{tr("All Categories", lang)}</h2>
-            <p className="text-gray-500 text-sm">Browse by category across Niger State</p>
-          </div>
-          <Link to="/products" className="text-sm font-semibold text-green-700 hover:text-green-800 flex items-center gap-1">View All <ChevronRight size={14} /></Link>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
-          {CATEGORIES.map(cat => (
-            <Link key={cat.id} to={`/products?category=${cat.id}`} className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-white border border-green-100 hover:border-green-400 hover:shadow-md transition-all duration-300 text-center">
-              <div className="w-12 h-12 rounded-xl overflow-hidden bg-green-50 relative">
-                <img src={cat.img} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
-              </div>
-              <span className="text-xs font-semibold text-gray-700 group-hover:text-green-700 transition-colors leading-tight">{lang === "ha" ? cat.nameHa : cat.name}</span>
-              <span className="text-[10px] text-gray-400">{cat.count} items</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Promo banners */}
-      <section className="max-w-7xl mx-auto px-4 pb-8">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="relative rounded-2xl overflow-hidden h-40 bg-amber-900 cursor-pointer group" onClick={() => nav("/products?category=crafts")}>
-            <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=700&h=300&fit=crop&auto=format" alt="" className="w-full h-full object-cover opacity-60 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500" />
-            <div className="absolute inset-0 bg-gradient-to-r from-amber-900/80 to-amber-800/30 flex flex-col justify-center px-6">
-              <Badge className="bg-amber-400 text-amber-900 w-fit mb-2">🏺 Nupe Heritage</Badge>
-              <h3 className="text-white font-bold text-xl">Bida Brasswork & Crafts</h3>
-              <p className="text-amber-200 text-sm">Authentic pieces from master artisans</p>
-            </div>
-          </div>
-          <div className="relative rounded-2xl overflow-hidden h-40 bg-green-900 cursor-pointer group" onClick={() => nav("/products?category=agriculture")}>
-            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&h=300&fit=crop&auto=format" alt="" className="w-full h-full object-cover opacity-60 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500" />
-            <div className="absolute inset-0 bg-gradient-to-r from-green-900/80 to-green-800/30 flex flex-col justify-center px-6">
-              <Badge className="bg-green-400 text-green-900 w-fit mb-2">🌾 Farm Fresh</Badge>
-              <h3 className="text-white font-bold text-xl">Local Farm Produce</h3>
-              <p className="text-green-200 text-sm">Yam, rice, groundnuts & more</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Browse Services */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">⭐ Browse by Service Type</h2>
-            <p className="text-gray-500 text-sm">Find skilled artisans & professionals across Niger State</p>
-          </div>
-          <Link to="/products?category=services" className="text-sm font-semibold text-green-700 hover:text-green-800 flex items-center gap-1">View All Services <ChevronRight size={14} /></Link>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-          {SERVICE_SUBCATEGORIES.map(s => (
-            <Link key={s.id} to={`/products?category=services&subcategory=${s.id}`} className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-white border border-green-100 hover:border-green-400 hover:shadow-md transition-all duration-300 text-center">
-              <div className="text-4xl group-hover:scale-110 transition-transform duration-300">{s.icon}</div>
-              <span className="text-xs font-semibold text-gray-700 group-hover:text-green-700 transition-colors">{lang === "ha" ? s.nameHa : s.name}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      <section className="max-w-7xl mx-auto px-4 pb-12">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">🔥 Trending Products</h2>
-            <p className="text-gray-500 text-sm">Top-selling items across Niger State</p>
-          </div>
-          <Link to="/products" className="text-sm font-semibold text-green-700 hover:text-green-800 flex items-center gap-1">View All <ChevronRight size={14} /></Link>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {featured.map(p => <ProductCard key={p.id} product={p} />)}
-        </div>
-      </section>
-
-      {/* Top Sellers */}
-      <section className="bg-green-50 py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">⭐ Top Sellers</h2>
-              <p className="text-gray-500 text-sm">Trusted vendors with verified track records</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {topSellers.map(seller => (
-              <Link key={seller.id} to={`/seller/${seller.id}`} className="bg-white rounded-xl border border-green-100 overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
-                <div className="h-24 overflow-hidden bg-green-100 relative">
-                  <img src={seller.banner} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-green-900/20" />
-                </div>
-                <div className="p-4 -mt-8">
-                  <div className="w-14 h-14 rounded-full border-3 border-white overflow-hidden shadow-md mb-2 bg-green-100">
-                    <img src={seller.avatar} alt={seller.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <h3 className="font-bold text-gray-900 text-sm">{seller.name}</h3>
-                    {seller.verified && <CheckCircle size={13} className="text-green-600" />}
-                  </div>
-                  <p className="text-xs text-gray-500 flex items-center gap-1 mb-1.5"><MapPin size={10}/>{seller.location}</p>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="flex items-center gap-0.5 text-amber-500 font-semibold"><Star size={11} className="fill-current"/>{seller.rating}</span>
-                    <span className="text-gray-400">·</span>
-                    <span className="text-gray-500">{seller.totalSales.toLocaleString()} sales</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Why NigerMart */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Why Choose NigerMart?</h2>
-        <p className="text-gray-500 text-center text-sm mb-8">Built for Niger State, by Niger State</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { icon:<Shield size={28} className="text-green-600"/>, title:"Verified Sellers", desc:"Every seller is identity-verified before listing on our platform" },
-            { icon:<MapPin size={28} className="text-green-600"/>, title:"25 LGAs Covered", desc:"We serve all Local Government Areas across Niger State" },
-            { icon:<Truck size={28} className="text-green-600"/>, title:"Fast Delivery", desc:"Same-day delivery in Minna, 2-day delivery across Niger State" },
-            { icon:<CreditCard size={28} className="text-green-600"/>, title:"Secure Payments", desc:"Paystack & Flutterwave powered — your money is always safe" },
-          ].map((f, i) => (
-            <div key={i} className="flex flex-col items-center text-center p-4 rounded-xl hover:bg-green-50 transition-colors">
-              <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mb-3">{f.icon}</div>
-              <h3 className="font-bold text-gray-900 text-sm mb-1">{f.title}</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA Banner */}
-      <section className="bg-green-700 text-white py-12">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-black mb-3">Ready to Start Selling?</h2>
-          <p className="text-green-200 mb-6">Join 5,000+ verified sellers already growing their business on NigerMart. Free to register!</p>
-          <div className="flex gap-3 justify-center flex-wrap">
-            <Btn variant="gold" className="px-8 py-3 text-base" onClick={() => nav("/auth?mode=seller")}>
-              <Store size={18}/> Register as Seller
-            </Btn>
-            <Btn variant="outline" className="px-8 py-3 text-base border-white text-white hover:bg-white/10" onClick={() => nav("/products")}>
-              <ShoppingBag size={18}/> Start Shopping
-            </Btn>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
@@ -1668,194 +1471,24 @@ function BuyerDashboard() {
 // ─── SellerDashboard ──────────────────────────────────────────────────────────
 
 function SellerDashboard() {
-  const { user, isLoggedIn } = useApp()
+  const { isLoggedIn } = useApp()
   const nav = useNavigate()
-  const [tab, setTab] = useState<"overview"|"products"|"orders">("overview")
 
   if (!isLoggedIn) return (
     <div className="max-w-lg mx-auto px-4 py-20 text-center">
       <Lock size={40} className="text-green-300 mx-auto mb-4"/>
       <h2 className="text-xl font-bold text-gray-700 mb-2">Login Required</h2>
-      <Btn variant="primary" onClick={() => nav("/auth")}>Login</Btn>
+      <Btn variant="primary" onClick={() => nav("/vendor-auth?mode=seller")}>Login</Btn>
     </div>
   )
 
-  const stats = [
-    { label:"Total Revenue",  value:"₦462,000", change:"+18%", icon:<TrendingUp size={20} className="text-green-600"/>, bg:"bg-green-50" },
-    { label:"Total Orders",   value:"128",       change:"+12%", icon:<Package size={20} className="text-blue-600"/>,   bg:"bg-blue-50" },
-    { label:"Active Products",value:"87",        change:"+3",   icon:<Tag size={20} className="text-purple-600"/>,     bg:"bg-purple-50" },
-    { label:"Avg. Rating",    value:"4.8 ⭐",    change:"+0.2", icon:<Star size={20} className="text-amber-500"/>,     bg:"bg-amber-50" },
-  ]
-
-  const myProducts = PRODUCTS.filter(p => p.sellerId === "s1").concat(PRODUCTS.slice(0, 3))
-
-  return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Seller Dashboard</h1>
-          <p className="text-gray-500 text-sm">Bida Craft Hub · Bida LGA</p>
-        </div>
-        <Btn variant="primary" onClick={() => {}}><Plus size={16}/> Add Product</Btn>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-0 border-b-2 border-green-100 mb-6">
-        {(["overview","products","orders"] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)} className={`px-6 py-3 text-sm font-semibold border-b-2 -mb-[2px] capitalize transition-colors ${tab === t ? "border-green-700 text-green-700" : "border-transparent text-gray-500 hover:text-gray-700"}`}>
-            {t}
-          </button>
-        ))}
-      </div>
-
-      {tab === "overview" && (
-        <div className="space-y-6">
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {stats.map((s, i) => (
-              <div key={i} className="bg-white rounded-xl border border-green-100 p-4">
-                <div className={`w-10 h-10 rounded-lg ${s.bg} flex items-center justify-center mb-3`}>{s.icon}</div>
-                <p className="text-2xl font-black text-gray-900">{s.value}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
-                <span className="text-xs text-green-600 font-semibold">{s.change} this month</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Charts */}
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="md:col-span-2 bg-white rounded-xl border border-green-100 p-5">
-              <h3 className="font-bold text-gray-900 mb-4">Revenue Overview</h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={SALES_DATA}>
-                  <defs>
-                    <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#15803d" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#15803d" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0fdf4"/>
-                  <XAxis dataKey="month" tick={{fontSize:11}} axisLine={false} tickLine={false}/>
-                  <YAxis tick={{fontSize:11}} axisLine={false} tickLine={false} tickFormatter={v=>`₦${(v/1000).toFixed(0)}k`}/>
-                  <Tooltip formatter={(v:number)=>[`₦${v.toLocaleString()}`, "Revenue"]}/>
-                  <Area type="monotone" dataKey="revenue" stroke="#15803d" strokeWidth={2.5} fill="url(#colorRev)"/>
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="bg-white rounded-xl border border-green-100 p-5">
-              <h3 className="font-bold text-gray-900 mb-4">Sales by Category</h3>
-              <ResponsiveContainer width="100%" height={160}>
-                <PieChart>
-                  <Pie data={PIE_DATA} cx="50%" cy="50%" innerRadius={45} outerRadius={70} dataKey="value" paddingAngle={3}>
-                    {PIE_DATA.map((_, i) => <Cell key={i} fill={PIE_COLORS[i]}/>)}
-                  </Pie>
-                  <Tooltip/>
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="space-y-1.5 mt-2">
-                {PIE_DATA.map((d, i) => (
-                  <div key={d.name} className="flex items-center gap-2 text-xs">
-                    <span className="w-3 h-3 rounded-full" style={{background:PIE_COLORS[i]}}/>
-                    <span className="text-gray-600">{d.name}</span>
-                    <span className="ml-auto font-semibold text-gray-900">{d.value}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Monthly orders bar */}
-          <div className="bg-white rounded-xl border border-green-100 p-5">
-            <h3 className="font-bold text-gray-900 mb-4">Monthly Orders</h3>
-            <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={SALES_DATA}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0fdf4"/>
-                <XAxis dataKey="month" tick={{fontSize:11}} axisLine={false} tickLine={false}/>
-                <YAxis tick={{fontSize:11}} axisLine={false} tickLine={false}/>
-                <Tooltip/>
-                <Bar dataKey="orders" fill="#15803d" radius={[4,4,0,0]}/>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      )}
-
-      {tab === "products" && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-gray-500">Showing {myProducts.length} products</p>
-            <Btn variant="primary" className="text-sm"><Plus size={14}/> Add New Product</Btn>
-          </div>
-          <div className="bg-white rounded-xl border border-green-100 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-green-50 border-b border-green-100">
-                <tr>{["Product","Category","Price","Stock","Rating","Actions"].map(h => <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-600">{h}</th>)}</tr>
-              </thead>
-              <tbody className="divide-y divide-green-50">
-                {myProducts.map(p => (
-                  <tr key={p.id} className="hover:bg-green-50/30 transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <img src={p.images[0]} alt="" className="w-9 h-9 rounded-lg object-cover bg-green-100"/>
-                        <span className="font-medium text-gray-900 line-clamp-1">{p.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3"><Badge className="bg-green-100 text-green-700">{CATEGORIES.find(c=>c.id===p.category)?.name}</Badge></td>
-                    <td className="px-4 py-3 font-semibold text-green-700">{fmt(p.price)}</td>
-                    <td className="px-4 py-3"><Badge className={p.inStock ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}>{p.inStock ? "In Stock" : "Out"}</Badge></td>
-                    <td className="px-4 py-3"><span className="flex items-center gap-1"><Star size={11} className="fill-amber-400 text-amber-400"/>{p.rating}</span></td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-1">
-                        <button className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition-colors"><Eye size={14}/></button>
-                        <button className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition-colors"><Edit size={14}/></button>
-                        <button className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 transition-colors"><Trash2 size={14}/></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {tab === "orders" && (
-        <div>
-          <div className="bg-white rounded-xl border border-green-100 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-green-50 border-b border-green-100">
-                <tr>{["Order ID","Item","Buyer","Date","Amount","Status"].map(h=><th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-600">{h}</th>)}</tr>
-              </thead>
-              <tbody className="divide-y divide-green-50">
-                {[
-                  { id:"ORD-001", item:"Bida Brasswork Vase",   buyer:"Aminu Bello",    date:"Jun 20", amount:8500,  status:"Delivered" },
-                  { id:"ORD-002", item:"Nupe Fabric 6yds",       buyer:"Hauwa Suleiman",  date:"Jun 18", amount:15000, status:"In Transit" },
-                  { id:"ORD-003", item:"Bida Brasswork Vase",   buyer:"Musa Ibrahim",    date:"Jun 16", amount:8500,  status:"Processing" },
-                  { id:"ORD-004", item:"Brasswork Table Set",    buyer:"Ramatu Tanko",   date:"Jun 14", amount:22000, status:"Delivered" },
-                  { id:"ORD-005", item:"Nupe Fabric 6yds",       buyer:"Aisha Abdullahi",date:"Jun 12", amount:15000, status:"Delivered" },
-                ].map(o => (
-                  <tr key={o.id} className="hover:bg-green-50/30 transition-colors">
-                    <td className="px-4 py-3 font-mono text-xs text-gray-500">{o.id}</td>
-                    <td className="px-4 py-3 font-medium text-gray-900">{o.item}</td>
-                    <td className="px-4 py-3 text-gray-600">{o.buyer}</td>
-                    <td className="px-4 py-3 text-gray-500">{o.date}</td>
-                    <td className="px-4 py-3 font-semibold text-green-700">{fmt(o.amount)}</td>
-                    <td className="px-4 py-3"><Badge className={o.status==="Delivered"?"bg-green-100 text-green-700":o.status==="In Transit"?"bg-blue-100 text-blue-700":"bg-amber-100 text-amber-700"}>{o.status}</Badge></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-    </div>
-  )
+  return <VendorModule />
 }
 
 // ─── AuthPage ─────────────────────────────────────────────────────────────────
 
 function AuthPage() {
-  const { setIsLoggedIn, setUser } = useApp()
+  const { setIsLoggedIn, setUser, setCurrentSellerId, setSellerData } = useApp()
   const nav = useNavigate()
   const loc = useLocation()
   const params = new URLSearchParams(loc.search)
@@ -1867,13 +1500,35 @@ function AuthPage() {
 
   const handleLogin = () => {
     setIsLoggedIn(true)
-    setUser({ name: form.email.includes("seller") ? "Bida Craft Hub" : "Aminu Bello", role })
+    const userName = form.email.includes("seller") ? "Bida Craft Hub" : "Aminu Bello"
+    setUser({ name: userName, role })
+
+    if (role === "seller") {
+      const seller = SELLERS.find(s => s.name.toLowerCase().includes(form.email.split("@")[0]) || s.name === userName)
+      if (seller) {
+        setCurrentSellerId(seller.id)
+        setSellerData(seller)
+      }
+    }
     nav(role === "seller" ? "/seller-dashboard" : "/dashboard")
   }
 
   const handleRegister = () => {
     setIsLoggedIn(true)
-    setUser({ name: form.name || "New User", role })
+    const userName = form.name || "New User"
+    setUser({ name: userName, role })
+
+    if (role === "seller") {
+      const seller = SELLERS.find(s => s.name.toLowerCase().includes(userName.toLowerCase()))
+      if (seller) {
+        setCurrentSellerId(seller.id)
+        setSellerData(seller)
+      } else {
+        setCurrentSellerId("s1")
+        const defaultSeller = SELLERS.find(s => s.id === "s1")
+        if (defaultSeller) setSellerData(defaultSeller)
+      }
+    }
     nav(role === "seller" ? "/seller-dashboard" : "/dashboard")
   }
 
@@ -2186,13 +1841,10 @@ function AdminPanel() {
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
 function Layout({ children }: { children: React.ReactNode }) {
-  const loc = useLocation()
-  const noFooter = ["/auth"].some(p => loc.pathname.startsWith(p))
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1">{children}</main>
-      {!noFooter && <Footer />}
     </div>
   )
 }
@@ -2203,22 +1855,14 @@ export default function App() {
   return (
     <AppProvider>
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/"                 element={<HomePage />} />
-            <Route path="/products"         element={<ProductListingPage />} />
-            <Route path="/products/:id"     element={<ProductDetailPage />} />
-            <Route path="/seller/:id"       element={<SellerStorefront />} />
-            <Route path="/cart"             element={<CartPage />} />
-            <Route path="/checkout"         element={<CheckoutPage />} />
-            <Route path="/dashboard"        element={<BuyerDashboard />} />
-            <Route path="/seller-dashboard" element={<SellerDashboard />} />
-            <Route path="/auth"             element={<AuthPage />} />
-            <Route path="/search"           element={<SearchResultsPage />} />
-            <Route path="/admin"            element={<AdminPanel />} />
-            <Route path="*"                 element={<HomePage />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          <Route path="/" element={<Layout><HomePage /></Layout>} />
+          <Route path="/vendor-auth" element={<Layout><AuthPage /></Layout>} />
+          <Route path="/seller-dashboard" element={<Layout><SellerDashboard /></Layout>} />
+          <Route path="/seller/:id" element={<Layout><SellerStorefront /></Layout>} />
+          <Route path="/admin" element={<Layout><AdminPanel /></Layout>} />
+          <Route path="/*" element={<BuyerModule />} />
+        </Routes>
       </BrowserRouter>
     </AppProvider>
   )
