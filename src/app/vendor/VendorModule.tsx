@@ -4,7 +4,6 @@ import { VendorErrorState, VendorLoadingState } from "./components/VendorStates"
 import { VendorStatusBadge } from "./components/VendorStatusBadge"
 import { vendorApi } from "./lib/vendorApi"
 import type { VendorDocument, VendorProfile } from "./lib/vendorTypes"
-import { VendorOnboardingPage } from "./pages/VendorOnboardingPage"
 import { VendorDashboardPage } from "./pages/VendorDashboardPage"
 import { VendorProductsPage } from "./pages/VendorProductsPage"
 import { VendorOrdersPage } from "./pages/VendorOrdersPage"
@@ -12,7 +11,7 @@ import { VendorPayoutsPage } from "./pages/VendorPayoutsPage"
 import { VendorSettingsPage } from "./pages/VendorSettingsPage"
 
 export default function VendorModule() {
-  const [active, setActive] = useState<VendorSection>("onboarding")
+  const [active, setActive] = useState<VendorSection>("dashboard")
   const [profile, setProfile] = useState<VendorProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
@@ -32,10 +31,6 @@ export default function VendorModule() {
   useEffect(() => {
     void loadProfile()
   }, [])
-
-  const submitOnboarding = async (updates: Partial<VendorProfile>) => {
-    setProfile(await vendorApi.submitOnboarding(updates))
-  }
 
   const uploadDocument = async (documentId: string, file: File) => {
     const uploaded: VendorDocument = await vendorApi.uploadDocument(documentId, file)
@@ -59,15 +54,12 @@ export default function VendorModule() {
       status={<VendorStatusBadge status={profile.status} />}
       onNavigate={setActive}
     >
-      {active === "onboarding" && (
-        <VendorOnboardingPage profile={profile} onSubmit={submitOnboarding} onUploadDocument={uploadDocument} />
-      )}
       {active === "dashboard" && <VendorDashboardPage />}
       {active === "products" && <VendorProductsPage />}
       {active === "orders" && <VendorOrdersPage />}
       {active === "payouts" && <VendorPayoutsPage />}
-      {active === "settings" && <VendorSettingsPage profile={profile} onSave={saveProfile} />}
-      {active !== "onboarding" && active !== "dashboard" && active !== "products" && active !== "orders" && active !== "payouts" && active !== "settings" && (
+      {active === "settings" && <VendorSettingsPage profile={profile} onSave={saveProfile} onUploadDocument={uploadDocument} />}
+      {active !== "dashboard" && active !== "products" && active !== "orders" && active !== "payouts" && active !== "settings" && (
         <VendorErrorState title="Section not built yet" body="This section shell is ready; the next increment will add the full screen with loading, empty, and error states." />
       )}
     </VendorShell>

@@ -1,9 +1,21 @@
 import { useState } from "react"
-import { VendorField, vendorInputClass, vendorTextareaClass } from "../components/VendorForm"
+import { FileUp } from "lucide-react"
+import { VendorField, vendorInputClass, vendorSelectClass, vendorTextareaClass } from "../components/VendorForm"
 import { VendorStatusBadge } from "../components/VendorStatusBadge"
 import type { VendorProfile } from "../lib/vendorTypes"
 
-export function VendorSettingsPage({ profile, onSave }: { profile: VendorProfile; onSave: (updates: Partial<VendorProfile>) => Promise<void> }) {
+const LGAS = ["Bida", "Bosso", "Chanchaga", "Kontagora", "Lapai", "Lavun", "Suleja"]
+const CATEGORIES = ["Crafts", "Fashion", "Food", "Electronics", "Agriculture", "Furniture", "Services"]
+
+export function VendorSettingsPage({
+  profile,
+  onSave,
+  onUploadDocument,
+}: {
+  profile: VendorProfile
+  onSave: (updates: Partial<VendorProfile>) => Promise<void>
+  onUploadDocument: (documentId: string, file: File) => Promise<void>
+}) {
   const [form, setForm] = useState(profile)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState("")
@@ -11,7 +23,7 @@ export function VendorSettingsPage({ profile, onSave }: { profile: VendorProfile
 
   const save = async () => {
     setSaving(true)
-    await onSave(form)
+    await onSave({ ...form, documents: profile.documents })
     setMessage("Settings saved")
     setSaving(false)
   }
@@ -30,7 +42,7 @@ export function VendorSettingsPage({ profile, onSave }: { profile: VendorProfile
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-4 rounded-xl border border-green-100 bg-white p-5 lg:col-span-2">
-          <h3 className="font-bold text-gray-900">Store profile</h3>
+          <h3 className="font-bold text-gray-900">Business details</h3>
           <div className="grid gap-4 md:grid-cols-2">
             <VendorField label="Store name">
               <input value={form.storeName} onChange={(event) => set("storeName", event.target.value)} className={vendorInputClass} />
@@ -44,7 +56,20 @@ export function VendorSettingsPage({ profile, onSave }: { profile: VendorProfile
             <VendorField label="Email">
               <input value={form.email} onChange={(event) => set("email", event.target.value)} className={vendorInputClass} />
             </VendorField>
+            <VendorField label="LGA">
+              <select value={form.lga} onChange={(event) => set("lga", event.target.value)} className={vendorSelectClass}>
+                {LGAS.map((lga) => <option key={lga} value={lga}>{lga}</option>)}
+              </select>
+            </VendorField>
+            <VendorField label="Primary category">
+              <select value={form.category} onChange={(event) => set("category", event.target.value)} className={vendorSelectClass}>
+                {CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+              </select>
+            </VendorField>
           </div>
+          <VendorField label="Business address">
+            <input value={form.address} onChange={(event) => set("address", event.target.value)} className={vendorInputClass} />
+          </VendorField>
           <VendorField label="Store description">
             <textarea value={form.description} onChange={(event) => set("description", event.target.value)} className={vendorTextareaClass} />
           </VendorField>
@@ -72,6 +97,41 @@ export function VendorSettingsPage({ profile, onSave }: { profile: VendorProfile
               <p className="mt-1 text-sm text-gray-500 line-clamp-3">{form.description}</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-green-100 bg-white p-5">
+        <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h3 className="font-bold text-gray-900">Verification documents</h3>
+            <p className="mt-1 text-sm text-gray-500">Update onboarding documents used for vendor verification.</p>
+          </div>
+          <VendorStatusBadge status={profile.status} />
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {profile.documents.map((doc) => (
+            <div key={doc.id} className="rounded-xl border border-green-100 p-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">{doc.label}</p>
+                  {doc.fileName && <p className="mt-0.5 text-xs text-gray-500">{doc.fileName}</p>}
+                </div>
+                <VendorStatusBadge status={doc.status} />
+              </div>
+              <label className="mt-3 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-green-200 px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50">
+                <FileUp size={14} />
+                Upload
+                <input
+                  type="file"
+                  className="hidden"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0]
+                    if (file) void onUploadDocument(doc.id, file)
+                  }}
+                />
+              </label>
+            </div>
+          ))}
         </div>
       </div>
 

@@ -13,6 +13,8 @@ import {
   Check, CreditCard, Eye, Lock, Leaf, AlertCircle
 } from "lucide-react"
 import VendorModule from "./vendor/VendorModule"
+import { VendorOnboardingPage } from "./vendor/pages/VendorOnboardingPage"
+import { vendorApi, type VendorProfile } from "./vendor/lib/vendorApi"
 import BuyerModule from "./buyer/BuyerModule"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -188,7 +190,7 @@ const PIE_DATA = [
 const PIE_COLORS = ["#15803d","#d97706","#3b82f6","#8b5cf6"]
 
 const T: Record<string, Record<Lang, string>> = {
-  "NigerMart":          { en:"NigerMart",          ha:"NigerMart" },
+  "Zamani Marketplace": { en:"Zamani Marketplace", ha:"Zamani Marketplace" },
   "Search products...": { en:"Search products...", ha:"Nema kaya..." },
   "Home":               { en:"Home",               ha:"Gida" },
   "Shop":               { en:"Shop",               ha:"Shago" },
@@ -206,7 +208,7 @@ const T: Record<string, Record<Lang, string>> = {
   "Price Range":        { en:"Price Range",        ha:"Kewayon Farashi" },
   "Location":           { en:"Location",           ha:"Wuri" },
   "Rating":             { en:"Rating",             ha:"Matsayi" },
-  "Sell on NigerMart":  { en:"Sell on NigerMart",  ha:"Saya a NigerMart" },
+  "Sell on Zamani Marketplace": { en:"Sell on Zamani Marketplace", ha:"Saya a Zamani Marketplace" },
 }
 
 const tr = (key: string, lang: Lang) => T[key]?.[lang] ?? key
@@ -368,7 +370,7 @@ function Navbar() {
             <div className="w-8 h-8 bg-green-700 rounded-lg flex items-center justify-center">
               <Leaf size={16} className="text-white" />
             </div>
-            <span className="text-lg font-black text-green-800 tracking-tight hidden sm:block">Niger<span className="text-amber-500">Mart</span></span>
+            <span className="text-base font-black text-green-800 tracking-tight sm:text-lg">Zamani <span className="text-amber-500">Marketplace</span></span>
           </Link>
 
           {/* Right actions */}
@@ -401,8 +403,8 @@ function Navbar() {
                 )}
               </div>
             ) : (
-              <Link to="/auth" className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-lg bg-green-700 text-white text-sm font-semibold hover:bg-green-800 transition-colors">
-                <User size={14} /> {tr("Login", lang)}
+              <Link to="/auth" className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-lg  text-white text-sm font-semibold  transition-colors">
+                {/* <User size={14} /> {tr("Login", lang)} */}
               </Link>
             )}
 
@@ -457,7 +459,7 @@ function Footer() {
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center"><Leaf size={16} className="text-white" /></div>
-              <span className="text-lg font-black text-white">Niger<span className="text-amber-400">Mart</span></span>
+              <span className="text-lg font-black text-white">Zamani <span className="text-amber-400">Marketplace</span></span>
             </div>
             <p className="text-sm text-green-300 leading-relaxed mb-4">Niger State's #1 online marketplace. Connecting buyers and sellers across all 25 LGAs.</p>
             <div className="flex gap-2">
@@ -513,7 +515,7 @@ function Footer() {
         </div>
 
         <div className="mt-6 pt-4 border-t border-green-800 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-green-500">
-          <p>© 2025 NigerMart. All rights reserved. Made with ❤️ in Niger State, Nigeria.</p>
+          <p>© 2025 Zamani Marketplace. All rights reserved. Made with ❤️ in Niger State, Nigeria.</p>
           <p>Prices shown in Nigerian Naira (₦). All transactions secured by SSL.</p>
         </div>
       </div>
@@ -558,13 +560,10 @@ function HomePage() {
               </h1>
               <p className="text-green-200 text-base md:text-lg mb-6">{slides[slide].sub}</p>
               <div className="flex gap-3 flex-wrap">
-                <Btn variant="gold" className="px-6 py-3 text-base" onClick={() => nav(slides[slide].link)}>
-                  {slides[slide].cta} <ArrowRight size={16} />
+                <Btn variant="gold" className="px-6 py-3 text-base" onClick={() => nav("/auth")}>
+                  <User size={16} /> Customer Login
                 </Btn>
-                <Btn variant="outline" className="px-6 py-3 text-base border-white text-white hover:bg-white/10" onClick={() => nav("/vendor-auth?mode=seller")}>
-                  <Store size={16} /> Start Selling
-                </Btn>
-                <Btn variant="outline" className="px-6 py-3 text-base border-white text-white hover:bg-white/10" onClick={() => nav("/vendor-auth?mode=seller")}>
+                <Btn variant="outline" className="px-6 py-3 text-base border-white text-white hover:bg-white/10" onClick={() => nav("/vendor-auth")}>
                   <User size={16} /> Vendor Login
                 </Btn>
               </div>
@@ -1492,11 +1491,34 @@ function AuthPage() {
   const nav = useNavigate()
   const loc = useLocation()
   const params = new URLSearchParams(loc.search)
+  const sellerEntry = params.get("mode") === "seller" || params.get("role") === "seller" || loc.pathname.includes("vendor-auth")
   const [mode, setMode] = useState<"login"|"register"|"forgot">(params.get("mode") === "seller" ? "register" : "login")
-  const [role, setRole] = useState<UserRole>(params.get("mode") === "seller" ? "seller" : "buyer")
+  const [role, setRole] = useState<UserRole>(sellerEntry ? "seller" : "buyer")
   const [form, setForm] = useState({ name:"", email:"", phone:"+234 ", password:"", lga:"" })
   const set = (k: string, v: string) => setForm(f => ({...f, [k]: v}))
   const [showPw, setShowPw] = useState(false)
+  const [vendorProfile, setVendorProfile] = useState<VendorProfile | null>(null)
+  const [vendorLoading, setVendorLoading] = useState(sellerEntry)
+  const [vendorError, setVendorError] = useState("")
+
+  useEffect(() => {
+    if (!sellerEntry) return
+    let mounted = true
+    const loadVendorProfile = async () => {
+      try {
+        setVendorLoading(true)
+        setVendorError("")
+        const profile = await vendorApi.getProfile()
+        if (mounted) setVendorProfile(profile)
+      } catch (err) {
+        if (mounted) setVendorError(err instanceof Error ? err.message : "Unable to load vendor onboarding")
+      } finally {
+        if (mounted) setVendorLoading(false)
+      }
+    }
+    void loadVendorProfile()
+    return () => { mounted = false }
+  }, [sellerEntry])
 
   const handleLogin = () => {
     setIsLoggedIn(true)
@@ -1532,6 +1554,54 @@ function AuthPage() {
     nav(role === "seller" ? "/seller-dashboard" : "/dashboard")
   }
 
+  const submitVendorOnboarding = async (updates: Partial<VendorProfile>) => {
+    const updated = await vendorApi.submitOnboarding(updates)
+    setVendorProfile(updated)
+    setIsLoggedIn(true)
+    setUser({ name: updated.storeName, role: "seller" })
+    setCurrentSellerId("s1")
+    const defaultSeller = SELLERS.find(s => s.id === "s1")
+    if (defaultSeller) setSellerData(defaultSeller)
+    nav("/seller-dashboard")
+  }
+
+  const uploadVendorDocument = async (documentId: string, file: File) => {
+    const uploaded = await vendorApi.uploadDocument(documentId, file)
+    setVendorProfile(current => current ? {
+      ...current,
+      documents: current.documents.map(doc => doc.id === documentId ? uploaded : doc),
+    } : current)
+  }
+
+  if (sellerEntry && mode === "register" && role === "seller") {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="mx-auto max-w-7xl px-4 py-6">
+          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <Link to="/" className="flex items-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-700 text-white"><Leaf size={18} /></div>
+              <span className="text-xl font-black text-green-800">Zamani <span className="text-amber-500">Marketplace</span></span>
+            </Link>
+            <button onClick={() => setMode("login")} className="text-sm font-bold text-green-700 hover:text-green-800">Already registered? Login</button>
+          </div>
+
+          <div className="mb-5">
+            <h1 className="text-2xl font-black text-gray-900">Vendor sign up</h1>
+            <p className="mt-1 text-sm text-gray-500">Complete your business details and verification documents to submit your store for review.</p>
+          </div>
+
+          {vendorLoading ? (
+            <div className="rounded-xl border border-green-100 bg-white p-8 text-sm text-gray-500">Loading vendor onboarding...</div>
+          ) : vendorError || !vendorProfile ? (
+            <div className="rounded-xl border border-red-100 bg-red-50 p-5 text-sm text-red-700">{vendorError || "Vendor onboarding could not be loaded."}</div>
+          ) : (
+            <VendorOnboardingPage stepped profile={vendorProfile} onSubmit={submitVendorOnboarding} onUploadDocument={uploadVendorDocument} />
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen grid md:grid-cols-2">
       {/* Left panel */}
@@ -1542,7 +1612,7 @@ function AuthPage() {
         </div>
         <div className="relative z-10 max-w-xs text-center">
           <div className="w-16 h-16 bg-green-700 rounded-2xl flex items-center justify-center mx-auto mb-4"><Leaf size={28} className="text-white"/></div>
-          <h2 className="text-3xl font-black mb-3">Niger<span className="text-amber-400">Mart</span></h2>
+          <h2 className="text-3xl font-black mb-3">Zamani <span className="text-amber-400">Marketplace</span></h2>
           <p className="text-green-200 text-base leading-relaxed">Niger State's largest online marketplace. Buy and sell across all 25 LGAs.</p>
           <div className="mt-8 space-y-3 text-left">
             {[
@@ -1561,7 +1631,7 @@ function AuthPage() {
         <div className="w-full max-w-md">
           <div className="flex items-center gap-2 mb-8 md:hidden">
             <div className="w-8 h-8 bg-green-700 rounded-lg flex items-center justify-center"><Leaf size={16} className="text-white"/></div>
-            <span className="text-lg font-black text-green-800">Niger<span className="text-amber-500">Mart</span></span>
+            <span className="text-lg font-black text-green-800">Zamani <span className="text-amber-500">Marketplace</span></span>
           </div>
 
           {mode === "forgot" ? (
@@ -1580,7 +1650,7 @@ function AuthPage() {
           ) : mode === "login" ? (
             <>
               <h1 className="text-2xl font-black text-gray-900 mb-1">Welcome back</h1>
-              <p className="text-gray-500 text-sm mb-6">Login to your NigerMart account</p>
+              <p className="text-gray-500 text-sm mb-6">Login to your Zamani Marketplace account</p>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
@@ -1597,13 +1667,13 @@ function AuthPage() {
                   <label className="flex items-center gap-2 text-gray-600"><input type="checkbox" className="accent-green-700"/>Remember me</label>
                   <button onClick={()=>setMode("forgot")} className="text-green-700 hover:underline font-medium">Forgot password?</button>
                 </div>
-                <Btn variant="primary" className="w-full py-3 text-base" onClick={handleLogin}>Login to NigerMart</Btn>
+                <Btn variant="primary" className="w-full py-3 text-base" onClick={handleLogin}>Login to Zamani Marketplace</Btn>
                 <p className="text-center text-sm text-gray-500">Don't have an account? <button onClick={()=>setMode("register")} className="text-green-700 font-semibold hover:underline">Create one free</button></p>
               </div>
             </>
           ) : (
             <>
-              <h1 className="text-2xl font-black text-gray-900 mb-1">Join NigerMart</h1>
+              <h1 className="text-2xl font-black text-gray-900 mb-1">Join Zamani Marketplace</h1>
               <p className="text-gray-500 text-sm mb-4">Create your free account today</p>
               {/* Role toggle */}
               <div className="flex rounded-xl border-2 border-green-200 overflow-hidden mb-5">
@@ -1721,7 +1791,7 @@ function AdminPanel() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
-        <div><h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1><p className="text-sm text-gray-500">NigerMart Platform Management</p></div>
+        <div><h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1><p className="text-sm text-gray-500">Zamani Marketplace Platform Management</p></div>
         <Badge className="bg-red-100 text-red-700 px-3 py-1.5"><Shield size={12}/> Admin</Badge>
       </div>
 

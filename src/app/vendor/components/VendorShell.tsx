@@ -1,10 +1,9 @@
 import type { ReactNode } from "react"
-import { BarChart2, CreditCard, Home, Package, Settings, ShoppingBag, Store } from "lucide-react"
+import { BarChart2, CreditCard, Home, Package, Settings, ShoppingBag } from "lucide-react"
 
-export type VendorSection = "onboarding" | "dashboard" | "products" | "orders" | "payouts" | "settings"
+export type VendorSection = "dashboard" | "products" | "orders" | "payouts" | "settings"
 
 const navItems: Array<{ id: VendorSection; label: string; icon: ReactNode }> = [
-  { id: "onboarding", label: "Onboarding", icon: <Store size={16} /> },
   { id: "dashboard", label: "Dashboard", icon: <Home size={16} /> },
   { id: "products", label: "Products", icon: <ShoppingBag size={16} /> },
   { id: "orders", label: "Orders", icon: <Package size={16} /> },

@@ -27,8 +27,8 @@ export function BuyerShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-green-100 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center">
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-700 text-lg font-black text-white">N</div>
-            <span className="text-xl font-black text-green-800">Niger<span className="text-amber-500">Mart</span></span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-700 text-lg font-black text-white">Z</div>
+            <span className="text-xl font-black text-green-800">Zamani <span className="text-amber-500">Marketplace</span></span>
           </Link>
 
           <form onSubmit={submitSearch} className="relative min-w-0 flex-1">
