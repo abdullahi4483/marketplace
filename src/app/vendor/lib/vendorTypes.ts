@@ -30,6 +30,9 @@ export interface VendorProfile {
   description: string
   returnPolicy: string
   shippingPolicy: string
+  payoutBankName?: string
+  payoutAccountName?: string
+  payoutAccountNumber?: string
   documents: VendorDocument[]
 }
 

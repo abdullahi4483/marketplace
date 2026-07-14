@@ -87,7 +87,12 @@ export const vendorApi: VendorApiContract = {
   },
   listPayouts: () => wait({ balance: 128500, pending: 31500, history: payouts.map((payout) => ({ ...payout })) }),
   requestPayout: async (amount) => {
-    const payout = { id: `PAY-${Date.now()}`, amount, status: "pending" as const, destination: "GTBank **** 4821", requestedAt: new Date().toISOString().slice(0, 10) }
+    if (!profile.payoutBankName || !profile.payoutAccountName || !/^\d{10}$/.test(profile.payoutAccountNumber)) {
+      throw new Error("Add a payout account in Settings before requesting a payout.")
+    }
+    const accountSuffix = profile.payoutAccountNumber.slice(-4)
+    const destination = `${profile.payoutBankName} · ${profile.payoutAccountName} · **** ${accountSuffix}`
+    const payout = { id: `PAY-${Date.now()}`, amount, status: "pending" as const, destination, requestedAt: new Date().toISOString().slice(0, 10) }
     payouts = [payout, ...payouts]
     return wait(payout)
   },

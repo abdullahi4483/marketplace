@@ -160,6 +160,24 @@ export function VendorSettingsPage({
         </div>
       </div>
 
+      <div className="rounded-xl border border-green-100 bg-white p-5">
+        <div>
+          <h3 className="font-bold text-gray-900">Payout account</h3>
+          <p className="mt-1 text-sm text-gray-500">Payout requests will be sent to this bank account.</p>
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-3">
+          <VendorField label="Bank name">
+            <input value={form.payoutBankName ?? ""} onChange={(event) => set("payoutBankName", event.target.value)} placeholder="e.g. GTBank" className={vendorInputClass} />
+          </VendorField>
+          <VendorField label="Account holder name">
+            <input value={form.payoutAccountName ?? ""} onChange={(event) => set("payoutAccountName", event.target.value)} placeholder="Name on the account" className={vendorInputClass} />
+          </VendorField>
+          <VendorField label="Account number">
+            <input value={form.payoutAccountNumber ?? ""} onChange={(event) => set("payoutAccountNumber", event.target.value.replace(/\D/g, "").slice(0, 10))} inputMode="numeric" maxLength={10} placeholder="10-digit account number" className={vendorInputClass} />
+          </VendorField>
+        </div>
+      </div>
+
       <div className="flex justify-end">
         <button onClick={() => void save()} disabled={saving} className="min-h-11 rounded-xl bg-green-700 px-5 py-3 text-sm font-bold text-white hover:bg-green-800 disabled:opacity-50">
           {saving ? "Saving..." : "Save settings"}

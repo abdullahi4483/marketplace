@@ -15,6 +15,9 @@ export const vendorProfileSeed: VendorProfile = {
   description: "Authentic Nupe brasswork and traditional crafts from Bida artisans.",
   returnPolicy: "Returns accepted within 7 days for damaged items reported at delivery.",
   shippingPolicy: "Same-day dispatch within Bida. Statewide delivery within 2-3 business days.",
+  payoutBankName: "GTBank",
+  payoutAccountName: "Aminu Abdullahi",
+  payoutAccountNumber: "0123456789",
   documents: [
     { id: "cac", label: "Business Registration / CAC", status: "uploaded", fileName: "cac-certificate.pdf" },
     { id: "identity", label: "Owner Government ID", status: "verified", fileName: "nin-slip.pdf" },
