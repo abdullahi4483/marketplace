@@ -62,7 +62,7 @@ export function VendorPayoutsPage() {
           <h2 className="text-xl font-black text-gray-900">Payouts and earnings</h2>
           <p className="mt-1 text-sm text-gray-500">Track available balance, pending settlements, and payout history.</p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="inline-flex items-center gap-2 rounded-xl bg-green-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-green-800">
+        <button onClick={() => setModalOpen(true)} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-green-700 px-4 text-sm font-bold text-white hover:bg-green-800">
           <Plus size={15} />
           Request payout
         </button>
@@ -86,14 +86,14 @@ export function VendorPayoutsPage() {
         onClose={() => setModalOpen(false)}
         footer={(
           <>
-            <button onClick={() => setModalOpen(false)} className="rounded-xl border border-green-200 px-4 py-2 text-sm font-bold text-green-700 hover:bg-green-50">Cancel</button>
-            <button onClick={() => void request()} disabled={amount < 1000 || amount > balance} className="rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white hover:bg-green-800 disabled:opacity-50">Submit request</button>
+            <button onClick={() => setModalOpen(false)} className="min-h-11 rounded-xl border border-green-200 px-4 text-sm font-bold text-green-700 hover:bg-green-50">Cancel</button>
+            <button onClick={() => void request()} disabled={amount < 1000 || amount > balance} className="min-h-11 rounded-xl bg-green-700 px-4 text-sm font-bold text-white hover:bg-green-800 disabled:opacity-50">Submit request</button>
           </>
         )}
       >
         <div className="space-y-3">
           <p className="text-sm text-gray-500">Available balance: <span className="font-bold text-green-700">{formatNaira(balance)}</span></p>
-          <input value={amount} onChange={(event) => setAmount(Number(event.target.value))} type="number" className="w-full rounded-xl border-2 border-green-200 bg-green-50/30 px-4 py-2.5 text-sm outline-none focus:border-green-600" />
+          <input value={amount} onChange={(event) => setAmount(Number(event.target.value))} type="number" className="min-h-11 w-full rounded-xl border-2 border-green-200 bg-green-50/30 px-4 py-2.5 text-sm outline-none focus:border-green-600" />
           <p className="text-xs text-gray-500">Backend should enforce minimum payout, bank verification, settlement windows, and fraud checks.</p>
         </div>
       </VendorModal>

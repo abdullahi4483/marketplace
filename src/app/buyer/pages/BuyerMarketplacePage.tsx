@@ -69,7 +69,7 @@ export function BuyerMarketplacePage() {
             <img src="https://images.unsplash.com/photo-1543168256-418811576931?w=900&h=620&fit=crop&auto=format" alt="Marketplace goods" className="h-full min-h-48 w-full object-cover" />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 md:grid-cols-2">
           {categories.slice(0, 4).map((category) => (
             <button
               key={category.id}
@@ -92,7 +92,7 @@ export function BuyerMarketplacePage() {
             <SlidersHorizontal size={17} />
             Filters
           </div>
-          <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:block lg:space-y-4">
             <label className="block">
               <span className="mb-1.5 block text-sm font-semibold text-gray-700">Category</span>
               <select value={query.category ?? ""} onChange={(event) => setFilter("category", event.target.value)} className={appSelectClass}>
@@ -136,7 +136,7 @@ export function BuyerMarketplacePage() {
           </div>
 
           {products.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {products.map((product) => <BuyerProductCard key={product.id} product={product} />)}
             </div>
           ) : (

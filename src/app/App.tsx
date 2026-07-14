@@ -272,7 +272,7 @@ function Btn({ children, variant = "primary", className = "", onClick, type = "b
   children: React.ReactNode; variant?: "primary" | "gold" | "outline" | "ghost"; className?: string
   onClick?: () => void; type?: "button" | "submit"; disabled?: boolean
 }) {
-  const base = "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+  const base = "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
   const variants = {
     primary: "bg-green-700 text-white hover:bg-green-800 active:scale-[0.98]",
     gold: "bg-amber-500 text-white hover:bg-amber-600 active:scale-[0.98]",
@@ -304,7 +304,7 @@ function ProductCard({ product }: { product: Product }) {
         )}
         <button
           onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id) }}
-          className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${inWish ? "bg-red-500 text-white" : "bg-white/80 text-gray-500 hover:bg-red-50 hover:text-red-500"}`}
+          className={`absolute top-2 right-2 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-200 md:h-8 md:w-8 ${inWish ? "bg-red-500 text-white" : "bg-white/80 text-gray-500 hover:bg-red-50 hover:text-red-500"}`}
         >
           <Heart size={14} className={inWish ? "fill-current" : ""} />
         </button>
@@ -358,32 +358,41 @@ function ProductCard({ product }: { product: Product }) {
 
 function Navbar() {
   const { lang, setLang, isLoggedIn, user, setIsLoggedIn, setUser, setCurrentSellerId, setSellerData } = useApp()
+  const loc = useLocation()
   const [open, setOpen] = useState(false)
   const [userOpen, setUserOpen] = useState(false)
+  const isVendorDashboard = loc.pathname === "/seller-dashboard"
+  const vendorSections = [
+    { id: "dashboard", label: "Dashboard" },
+    { id: "products", label: "Products" },
+    { id: "orders", label: "Orders" },
+    { id: "payouts", label: "Payouts" },
+    { id: "settings", label: "Settings" },
+  ]
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b-2 border-green-700 shadow-sm">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center gap-4 h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 shrink-0" onClick={() => setOpen(false)}>
+          <Link to="/" className="flex min-w-0 items-center gap-2 shrink-0" onClick={() => setOpen(false)}>
             <div className="w-8 h-8 bg-green-700 rounded-lg flex items-center justify-center">
               <Leaf size={16} className="text-white" />
             </div>
-            <span className="text-base font-black text-green-800 tracking-tight sm:text-lg">Zamani <span className="text-amber-500">Marketplace</span></span>
+            <span className="truncate text-sm font-black text-green-800 tracking-tight sm:text-lg">Zamani <span className="text-amber-500">Marketplace</span></span>
           </Link>
 
           {/* Right actions */}
           <div className="flex items-center gap-3 ml-auto">
             {/* Language toggle */}
-            <button onClick={() => setLang(lang === "en" ? "ha" : "en")} className="hidden md:flex items-center gap-1 text-xs font-bold px-2 py-1.5 rounded-lg border border-green-200 hover:bg-green-50 text-green-700 transition-colors">
+            <button onClick={() => setLang(lang === "en" ? "ha" : "en")} className="hidden min-h-11 items-center gap-1 rounded-lg border border-green-200 px-3 py-2 text-xs font-bold text-green-700 transition-colors hover:bg-green-50 md:flex">
               <Globe size={12} /> {lang === "en" ? "HA" : "EN"}
             </button>
 
             {/* User */}
             {isLoggedIn && user ? (
               <div className="relative">
-                <button onClick={() => setUserOpen(!userOpen)} className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-green-50 text-green-800 transition-colors">
+                <button onClick={() => setUserOpen(!userOpen)} className="flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-green-800 transition-colors hover:bg-green-50">
                   <div className="w-7 h-7 rounded-full bg-green-700 text-white flex items-center justify-center text-xs font-bold">{user.name[0]}</div>
                   <span className="hidden md:block text-sm font-medium">{user.name.split(" ")[0]}</span>
                   <ChevronDown size={14} />
@@ -394,11 +403,11 @@ function Navbar() {
                       <p className="font-semibold text-sm text-gray-900">{user.name}</p>
                       <p className="text-xs text-gray-500 capitalize">{user.role} Account</p>
                     </div>
-                    <Link to="/dashboard" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"><User size={14}/> Dashboard</Link>
-                    {user.role === "seller" && <Link to="/seller-dashboard" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"><Store size={14}/> Seller Panel</Link>}
-                    {user.role === "admin" && <Link to="/admin" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"><Shield size={14}/> Admin Panel</Link>}
-                    <Link to="/dashboard?tab=settings" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"><Settings size={14}/> Settings</Link>
-                    <button onClick={() => { setIsLoggedIn(false); setUser(null); setCurrentSellerId(null); setSellerData(null); setUserOpen(false) }} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"><LogOut size={14}/> Logout</button>
+                    <Link to="/dashboard" onClick={() => setUserOpen(false)} className="flex min-h-11 items-center gap-2 px-4 text-sm text-gray-700 transition-colors hover:bg-green-50 hover:text-green-700"><User size={14}/> Dashboard</Link>
+                    {user.role === "seller" && <Link to="/seller-dashboard" onClick={() => setUserOpen(false)} className="flex min-h-11 items-center gap-2 px-4 text-sm text-gray-700 transition-colors hover:bg-green-50 hover:text-green-700"><Store size={14}/> Seller Panel</Link>}
+                    {user.role === "admin" && <Link to="/admin" onClick={() => setUserOpen(false)} className="flex min-h-11 items-center gap-2 px-4 text-sm text-gray-700 transition-colors hover:bg-green-50 hover:text-green-700"><Shield size={14}/> Admin Panel</Link>}
+                    <Link to="/dashboard?tab=settings" onClick={() => setUserOpen(false)} className="flex min-h-11 items-center gap-2 px-4 text-sm text-gray-700 transition-colors hover:bg-green-50 hover:text-green-700"><Settings size={14}/> Settings</Link>
+                    <button onClick={() => { setIsLoggedIn(false); setUser(null); setCurrentSellerId(null); setSellerData(null); setUserOpen(false) }} className="flex min-h-11 w-full items-center gap-2 px-4 text-sm text-red-600 transition-colors hover:bg-red-50"><LogOut size={14}/> Logout</button>
                   </div>
                 )}
               </div>
@@ -409,7 +418,7 @@ function Navbar() {
             )}
 
             {/* Mobile menu toggle */}
-            <button onClick={() => setOpen(!open)} className="md:hidden p-2 rounded-lg hover:bg-green-50 text-gray-600 transition-colors">
+            <button onClick={() => setOpen(!open)} className="flex h-11 w-11 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-green-50 md:hidden">
               {open ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
@@ -419,29 +428,49 @@ function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden border-t border-green-100 bg-white px-4 py-4 space-y-3">
-          <div className="grid grid-cols-4 gap-2">
-            {CATEGORIES.map(c => (
-              <Link key={c.id} to={`/products?category=${c.id}`} onClick={() => setOpen(false)}
-                className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-green-50 transition-colors text-center">
-                <span className="text-xl">{c.icon}</span>
-                <span className="text-xs text-gray-600 leading-tight">{lang === "ha" ? c.nameHa : c.name}</span>
-              </Link>
-            ))}
-          </div>
-          <div className="flex items-center justify-between pt-2 border-t border-green-50">
-            {isLoggedIn ? (
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-green-700 text-white flex items-center justify-center text-sm font-bold">{user?.name[0]}</div>
-                <span className="text-sm font-medium text-gray-800">{user?.name}</span>
+        <div className="md:hidden border-t border-green-100 bg-white px-2 py-2">
+          {isVendorDashboard ? (
+            <nav aria-label="Vendor navigation" className="grid grid-cols-6 gap-1 rounded-xl border border-green-100 bg-white p-2">
+              {vendorSections.map((section, index) => {
+                const isActive = new URLSearchParams(loc.search).get("section") === section.id || (!loc.search && section.id === "dashboard")
+                return (
+                  <Link
+                    key={section.id}
+                    to={section.id === "dashboard" ? "/seller-dashboard" : `/seller-dashboard?section=${section.id}`}
+                    onClick={() => setOpen(false)}
+                    className={`col-span-2 flex min-h-9 items-center justify-center rounded-lg px-1.5 py-2 text-xs font-bold transition-colors ${index === 3 ? "col-start-2" : ""} ${isActive ? "bg-green-700 text-white" : "text-gray-600 hover:bg-green-50 hover:text-green-700"}`}
+                  >
+                    {section.label}
+                  </Link>
+                )
+              })}
+            </nav>
+          ) : (
+            <>
+              <div className="grid gap-2 md:grid-cols-3">
+                {CATEGORIES.map(c => (
+                  <Link key={c.id} to={`/products?category=${c.id}`} onClick={() => setOpen(false)}
+                    className="flex min-h-11 flex-col items-center gap-1 rounded-lg p-2 text-center transition-colors hover:bg-green-50">
+                    <span className="text-xl">{c.icon}</span>
+                    <span className="text-xs text-gray-600 leading-tight">{lang === "ha" ? c.nameHa : c.name}</span>
+                  </Link>
+                ))}
               </div>
-            ) : (
-              <Link to="/auth" onClick={() => setOpen(false)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-green-700 text-white text-sm font-semibold"><User size={14} /> {tr("Login", lang)}</Link>
-            )}
-            <button onClick={() => setLang(lang === "en" ? "ha" : "en")} className="flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg border border-green-200 text-green-700">
-              <Globe size={12} /> {lang === "en" ? "Hausa" : "English"}
-            </button>
-          </div>
+              <div className="flex items-center justify-between pt-2 border-t border-green-50">
+                {isLoggedIn ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-green-700 text-white flex items-center justify-center text-sm font-bold">{user?.name[0]}</div>
+                    <span className="text-sm font-medium text-gray-800">{user?.name}</span>
+                  </div>
+                ) : (
+                  <Link to="/auth" onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-1.5 rounded-lg bg-green-700 px-4 text-sm font-semibold text-white"><User size={14} /> {tr("Login", lang)}</Link>
+                )}
+                <button onClick={() => setLang(lang === "en" ? "ha" : "en")} className="flex min-h-11 items-center gap-1 rounded-lg border border-green-200 px-3 text-xs font-bold text-green-700">
+                  <Globe size={12} /> {lang === "en" ? "Hausa" : "English"}
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
     </header>
@@ -455,7 +484,7 @@ function Footer() {
   return (
     <footer className="bg-green-900 text-green-100 mt-16">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid gap-8 md:grid-cols-4">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center"><Leaf size={16} className="text-white" /></div>
@@ -464,7 +493,7 @@ function Footer() {
             <p className="text-sm text-green-300 leading-relaxed mb-4">Niger State's #1 online marketplace. Connecting buyers and sellers across all 25 LGAs.</p>
             <div className="flex gap-2">
               {["📘","🐦","📷","▶️"].map((icon, i) => (
-                <button key={i} className="w-8 h-8 rounded-lg bg-green-800 flex items-center justify-center text-sm hover:bg-green-700 transition-colors">{icon}</button>
+                <button key={i} aria-label={`Social link ${i + 1}`} className="flex h-11 w-11 items-center justify-center rounded-lg bg-green-800 text-sm hover:bg-green-700 transition-colors">{icon}</button>
               ))}
             </div>
           </div>
@@ -576,8 +605,8 @@ function HomePage() {
             <button key={i} onClick={() => setSlide(i)} className={`h-1.5 rounded-full transition-all ${i === slide ? "w-8 bg-amber-400" : "w-3 bg-white/50"}`} />
           ))}
         </div>
-        <button onClick={() => setSlide(s => (s - 1 + slides.length) % slides.length)} className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors"><ChevronLeft size={20} /></button>
-        <button onClick={() => setSlide(s => (s + 1) % slides.length)} className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors"><ChevronRight size={20} /></button>
+        <button onClick={() => setSlide(s => (s - 1 + slides.length) % slides.length)} aria-label="Previous slide" className="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors sm:left-4"><ChevronLeft size={20} /></button>
+        <button onClick={() => setSlide(s => (s + 1) % slides.length)} aria-label="Next slide" className="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors sm:right-4"><ChevronRight size={20} /></button>
       </div>
     </div>
   )
@@ -737,7 +766,7 @@ function ProductListingPage() {
         )}
 
           {paginated.length > 0 ? (
-            <div className={viewMode === "grid" ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4" : "space-y-3"}>
+            <div className={viewMode === "grid" ? "grid gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-3 xl:grid-cols-4" : "space-y-3"}>
               {paginated.map(p => viewMode === "grid" ? <ProductCard key={p.id} product={p} /> : (
                 <div key={p.id} className="bg-white rounded-xl border border-green-100 p-3 flex gap-4 hover:shadow-md transition-shadow">
                   <img src={p.images[0]} alt={p.name} className="w-24 h-24 rounded-lg object-cover bg-green-50 shrink-0 cursor-pointer" onClick={() => nav(`/products/${p.id}`)} />
@@ -861,13 +890,13 @@ function ProductDetailPage() {
           <div className="flex items-center gap-3 mb-4">
             <span className="text-sm font-medium text-gray-700">Quantity:</span>
             <div className="flex items-center border-2 border-green-200 rounded-xl overflow-hidden">
-              <button onClick={() => setQty(q => Math.max(1, q - 1))} className="w-9 h-9 flex items-center justify-center hover:bg-green-50 transition-colors text-green-700"><Minus size={14}/></button>
+              <button onClick={() => setQty(q => Math.max(1, q - 1))} aria-label="Decrease quantity" className="flex h-11 w-11 items-center justify-center hover:bg-green-50 transition-colors text-green-700"><Minus size={14}/></button>
               <span className="w-10 text-center font-bold text-gray-900">{qty}</span>
-              <button onClick={() => setQty(q => q + 1)} className="w-9 h-9 flex items-center justify-center hover:bg-green-50 transition-colors text-green-700"><Plus size={14}/></button>
+              <button onClick={() => setQty(q => q + 1)} aria-label="Increase quantity" className="flex h-11 w-11 items-center justify-center hover:bg-green-50 transition-colors text-green-700"><Plus size={14}/></button>
             </div>
           </div>
 
-          <div className="flex gap-3 mb-6">
+          <div className="flex flex-col gap-3 mb-6 sm:flex-row">
             {product.category === "services" ? (
               <>
                 <Btn variant="primary" className="flex-1 py-3" onClick={() => { for(let i = 0; i < qty; i++) addToCart(product); nav("/cart") }} disabled={!product.inStock}>
@@ -892,7 +921,7 @@ function ProductDetailPage() {
           {/* Seller card */}
           {seller && (
             <Link to={`/seller/${seller.id}`} className="block border border-green-200 rounded-xl p-4 hover:border-green-400 hover:shadow-md transition-all">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
                 <img src={seller.avatar} alt={seller.name} className="w-12 h-12 rounded-full object-cover border-2 border-green-200" />
                 <div className="flex-1">
                   <div className="flex items-center gap-1.5">
@@ -906,7 +935,7 @@ function ProductDetailPage() {
                     <span>{seller.products} products</span>
                   </div>
                 </div>
-                <div className="flex flex-col gap-1.5">
+                <div className="flex w-full flex-row gap-1.5 sm:w-auto sm:flex-col">
                   <a href={`tel:${seller.phone}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1 text-xs bg-green-700 text-white px-2.5 py-1.5 rounded-lg hover:bg-green-800 transition-colors">
                     <Phone size={11}/> Call
                   </a>
@@ -921,7 +950,7 @@ function ProductDetailPage() {
           )}
 
           {/* Delivery/Service info */}
-          <div className="mt-4 bg-green-50 rounded-xl p-4 grid grid-cols-3 gap-3 text-center">
+          <div className="mt-4 grid gap-3 rounded-xl bg-green-50 p-4 text-center md:grid-cols-3">
             {(product.category === "services" ? [
               { icon:<Zap size={18} className="text-green-700"/>, label:"Service Visit", sub:"Arranged" },
               { icon:<Shield size={18} className="text-green-700"/>, label:"Verified", sub:"Professionals" },
@@ -983,7 +1012,7 @@ function ProductDetailPage() {
       {related.length > 0 && (
         <section>
           <h2 className="text-xl font-bold text-gray-900 mb-4">Related Products</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid gap-4 md:grid-cols-4">
             {related.map(p => <ProductCard key={p.id} product={p} />)}
           </div>
         </section>
@@ -1047,7 +1076,7 @@ function SellerStorefront() {
       {/* Products */}
       <h2 className="text-xl font-bold text-gray-900 mb-4">Products by {seller.name}</h2>
       {products.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
           {products.map(p => <ProductCard key={p.id} product={p} />)}
         </div>
       ) : (
@@ -1082,20 +1111,20 @@ function CartPage() {
         {/* Cart items */}
         <div className="md:col-span-2 space-y-3">
           {cart.map(item => (
-            <div key={item.id} className="bg-white rounded-xl border border-green-100 p-4 flex gap-4">
+            <div key={item.id} className="bg-white rounded-xl border border-green-100 p-4 flex flex-col gap-4 sm:flex-row">
               <img src={item.images[0]} alt={item.name} className="w-20 h-20 rounded-lg object-cover bg-green-50 shrink-0 cursor-pointer" onClick={() => nav(`/products/${item.id}`)} />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-gray-900 text-sm hover:text-green-700 cursor-pointer line-clamp-2" onClick={() => nav(`/products/${item.id}`)}>{item.name}</h3>
                 <p className="text-xs text-gray-500 mt-0.5">{item.seller} · {item.location}</p>
-                <div className="flex items-center justify-between mt-2">
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
                   <span className="font-bold text-green-700">{fmt(item.price)}</span>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center border-2 border-green-200 rounded-lg overflow-hidden">
-                      <button onClick={() => updateQty(item.id, item.quantity - 1)} className="w-7 h-7 flex items-center justify-center hover:bg-green-50 text-green-700"><Minus size={12}/></button>
+                      <button onClick={() => updateQty(item.id, item.quantity - 1)} aria-label={`Decrease ${item.name} quantity`} className="flex h-11 w-11 items-center justify-center hover:bg-green-50 text-green-700"><Minus size={12}/></button>
                       <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
-                      <button onClick={() => updateQty(item.id, item.quantity + 1)} className="w-7 h-7 flex items-center justify-center hover:bg-green-50 text-green-700"><Plus size={12}/></button>
+                      <button onClick={() => updateQty(item.id, item.quantity + 1)} aria-label={`Increase ${item.name} quantity`} className="flex h-11 w-11 items-center justify-center hover:bg-green-50 text-green-700"><Plus size={12}/></button>
                     </div>
-                    <button onClick={() => removeFromCart(item.id)} className="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <button onClick={() => removeFromCart(item.id)} aria-label={`Remove ${item.name} from cart`} className="flex h-11 w-11 items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                       <Trash2 size={14}/>
                     </button>
                   </div>
@@ -1372,7 +1401,7 @@ function BuyerDashboard() {
           {tab === "overview" && (
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-4">Welcome back, {user?.name.split(" ")[0]}! 👋</h1>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+              <div className="mb-6 grid gap-3 md:grid-cols-4">
                 {[
                   { label:"Total Orders",    value:"4",    icon:<Package size={20} className="text-green-600"/>, bg:"bg-green-50" },
                   { label:"Wishlist Items",  value:wishlist.length.toString(), icon:<Heart size={20} className="text-red-500"/>, bg:"bg-red-50" },
@@ -1429,7 +1458,7 @@ function BuyerDashboard() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-4">Wishlist ({wishedProducts.length})</h1>
               {wishedProducts.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="grid gap-4 md:grid-cols-3">
                   {wishedProducts.map(p => <ProductCard key={p.id} product={p} />)}
                 </div>
               ) : (
@@ -1745,7 +1774,7 @@ function SearchResultsPage() {
       </div>
 
       {results.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
           {results.map(p => <ProductCard key={p.id} product={p} />)}
         </div>
       ) : (
@@ -1795,15 +1824,15 @@ function AdminPanel() {
         <Badge className="bg-red-100 text-red-700 px-3 py-1.5"><Shield size={12}/> Admin</Badge>
       </div>
 
-      <div className="flex gap-0 border-b-2 border-green-100 mb-6">
+      <div className="flex gap-0 overflow-x-auto border-b-2 border-green-100 mb-6">
         {(["overview","users","products","categories"] as const).map(t => (
-          <button key={t} onClick={()=>setTab(t)} className={`px-5 py-3 text-sm font-semibold border-b-2 -mb-[2px] capitalize transition-colors ${tab===t?"border-green-700 text-green-700":"border-transparent text-gray-500 hover:text-gray-700"}`}>{t}</button>
+          <button key={t} onClick={()=>setTab(t)} className={`min-h-11 shrink-0 px-5 py-3 text-sm font-semibold border-b-2 -mb-[2px] capitalize transition-colors ${tab===t?"border-green-700 text-green-700":"border-transparent text-gray-500 hover:text-gray-700"}`}>{t}</button>
         ))}
       </div>
 
       {tab === "overview" && (
         <div className="space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid gap-4 md:grid-cols-4">
             {adminStats.map((s, i) => (
               <div key={i} className="bg-white rounded-xl border border-green-100 p-4">
                 <div className={`w-10 h-10 rounded-lg ${s.bg} flex items-center justify-center mb-3`}>{s.icon}</div>
@@ -1829,8 +1858,8 @@ function AdminPanel() {
       )}
 
       {tab === "users" && (
-        <div className="bg-white rounded-xl border border-green-100 overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-xl border border-green-100 bg-white">
+          <table className="min-w-[760px] w-full text-sm">
             <thead className="bg-green-50 border-b border-green-100">
               <tr>{["User","LGA","Role","Joined","Status","Actions"].map(h=><th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-600">{h}</th>)}</tr>
             </thead>
@@ -1848,7 +1877,7 @@ function AdminPanel() {
                   <td className="px-4 py-3"><Badge className={u.role==="Seller"?"bg-green-100 text-green-700":"bg-blue-100 text-blue-700"}>{u.role}</Badge></td>
                   <td className="px-4 py-3 text-gray-500">{u.joined}</td>
                   <td className="px-4 py-3"><Badge className={u.status==="Active"?"bg-emerald-100 text-emerald-700":u.status==="Verified"?"bg-blue-100 text-blue-700":"bg-amber-100 text-amber-700"}>{u.status}</Badge></td>
-                  <td className="px-4 py-3"><div className="flex gap-1"><button className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50"><Eye size={13}/></button><button className="p-1.5 rounded-lg text-green-600 hover:bg-green-50"><Edit size={13}/></button><button className="p-1.5 rounded-lg text-red-500 hover:bg-red-50"><Trash2 size={13}/></button></div></td>
+                  <td className="px-4 py-3"><div className="flex gap-1"><button aria-label={`View ${u.name}`} className="flex h-11 w-11 items-center justify-center rounded-lg text-blue-500 hover:bg-blue-50"><Eye size={13}/></button><button aria-label={`Edit ${u.name}`} className="flex h-11 w-11 items-center justify-center rounded-lg text-green-600 hover:bg-green-50"><Edit size={13}/></button><button aria-label={`Delete ${u.name}`} className="flex h-11 w-11 items-center justify-center rounded-lg text-red-500 hover:bg-red-50"><Trash2 size={13}/></button></div></td>
                 </tr>
               ))}
             </tbody>
@@ -1858,7 +1887,7 @@ function AdminPanel() {
 
       {tab === "products" && (
         <div>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
             <h3 className="font-semibold text-gray-900">Pending Approval ({PRODUCTS.length})</h3>
             <div className="flex gap-2">
               <Btn variant="primary" className="text-xs px-3 py-2"><Check size={12}/> Approve All</Btn>
@@ -1866,14 +1895,14 @@ function AdminPanel() {
           </div>
           <div className="space-y-3">
             {PRODUCTS.slice(0, 5).map(p => (
-              <div key={p.id} className="bg-white rounded-xl border border-green-100 p-3 flex items-center gap-3">
+              <div key={p.id} className="bg-white rounded-xl border border-green-100 p-3 flex flex-wrap items-center gap-3 sm:flex-nowrap">
                 <img src={p.images[0]} alt="" className="w-12 h-12 rounded-lg object-cover bg-green-50"/>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm text-gray-900 truncate">{p.name}</p>
                   <p className="text-xs text-gray-500">by {p.seller} · {p.lga}</p>
                 </div>
                 <span className="font-bold text-green-700 text-sm">{fmt(p.price)}</span>
-                <div className="flex gap-1.5">
+                <div className="flex w-full gap-1.5 sm:w-auto">
                   <Btn variant="primary" className="text-xs px-3 py-1.5"><Check size={11}/> Approve</Btn>
                   <Btn variant="outline" className="text-xs px-3 py-1.5 text-red-600 border-red-200 hover:bg-red-50"><X size={11}/> Reject</Btn>
                 </div>
@@ -1889,7 +1918,7 @@ function AdminPanel() {
             <h3 className="font-semibold text-gray-900">All Categories</h3>
             <Btn variant="primary" className="text-sm"><Plus size={14}/> Add Category</Btn>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid gap-4 md:grid-cols-4">
             {CATEGORIES.map(c => (
               <div key={c.id} className="bg-white rounded-xl border border-green-100 p-4">
                 <div className="text-3xl mb-2">{c.icon}</div>
@@ -1897,7 +1926,7 @@ function AdminPanel() {
                 <p className="text-xs text-gray-500 mb-3">{c.count} products</p>
                 <div className="flex gap-1.5">
                   <button className="flex-1 text-xs py-1.5 rounded-lg border border-green-200 text-green-700 hover:bg-green-50 transition-colors flex items-center justify-center gap-1"><Edit size={11}/> Edit</button>
-                  <button className="p-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 transition-colors"><Trash2 size={11}/></button>
+                  <button aria-label={`Delete ${c.name}`} className="flex h-11 w-11 items-center justify-center rounded-lg border border-red-200 text-red-500 hover:bg-red-50 transition-colors"><Trash2 size={11}/></button>
                 </div>
               </div>
             ))}

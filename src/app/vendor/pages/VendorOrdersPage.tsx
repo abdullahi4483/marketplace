@@ -57,7 +57,7 @@ export function VendorOrdersPage() {
       key: "actions",
       header: "Actions",
       render: (order) => (
-        <button onClick={() => setSelected(order)} className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-semibold text-green-700 hover:bg-green-50">
+        <button onClick={() => setSelected(order)} className="inline-flex min-h-11 items-center gap-1 rounded-lg px-3 text-sm font-semibold text-green-700 hover:bg-green-50">
           <Eye size={14} />
           View
         </button>
@@ -87,11 +87,11 @@ export function VendorOrdersPage() {
         onClose={() => setSelected(null)}
         footer={selected && (
           <>
-            <button onClick={() => setSelected(null)} className="rounded-xl border border-green-200 px-4 py-2 text-sm font-bold text-green-700 hover:bg-green-50">Close</button>
+            <button onClick={() => setSelected(null)} className="min-h-11 rounded-xl border border-green-200 px-4 text-sm font-bold text-green-700 hover:bg-green-50">Close</button>
             <select
               value={selected.status}
               onChange={(event) => void updateStatus(selected.id, event.target.value as VendorOrderStatus)}
-              className="rounded-xl border-2 border-green-200 bg-white px-4 py-2 text-sm font-bold text-gray-900 outline-none focus:border-green-600"
+              className="min-h-11 rounded-xl border-2 border-green-200 bg-white px-4 text-sm font-bold text-gray-900 outline-none focus:border-green-600"
             >
               {[selected.status, ...nextStatuses.filter((status) => status !== selected.status)].map((status) => <option key={status} value={status}>{status}</option>)}
             </select>

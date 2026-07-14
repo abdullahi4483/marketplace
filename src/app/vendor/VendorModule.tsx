@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useLocation, useNavigate } from "react-router"
 import { VendorShell, type VendorSection } from "./components/VendorShell"
 import { VendorErrorState, VendorLoadingState } from "./components/VendorStates"
 import { VendorStatusBadge } from "./components/VendorStatusBadge"
@@ -11,7 +12,10 @@ import { VendorPayoutsPage } from "./pages/VendorPayoutsPage"
 import { VendorSettingsPage } from "./pages/VendorSettingsPage"
 
 export default function VendorModule() {
-  const [active, setActive] = useState<VendorSection>("dashboard")
+  const location = useLocation()
+  const navigate = useNavigate()
+  const section = new URLSearchParams(location.search).get("section")
+  const active: VendorSection = section === "products" || section === "orders" || section === "payouts" || section === "settings" ? section : "dashboard"
   const [profile, setProfile] = useState<VendorProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
@@ -44,6 +48,10 @@ export default function VendorModule() {
     setProfile(await vendorApi.saveProfile(updates))
   }
 
+  const navigateToSection = (next: VendorSection) => {
+    navigate(next === "dashboard" ? "/seller-dashboard" : `/seller-dashboard?section=${next}`)
+  }
+
   if (loading) return <div className="mx-auto max-w-7xl px-4 py-6"><VendorLoadingState /></div>
   if (error || !profile) return <div className="mx-auto max-w-7xl px-4 py-6"><VendorErrorState body={error || "Vendor profile was not found"} onRetry={loadProfile} /></div>
 
@@ -52,9 +60,9 @@ export default function VendorModule() {
       active={active}
       storeName={profile.storeName}
       status={<VendorStatusBadge status={profile.status} />}
-      onNavigate={setActive}
+      onNavigate={navigateToSection}
     >
-      {active === "dashboard" && <VendorDashboardPage />}
+      {active === "dashboard" && <VendorDashboardPage profile={profile} />}
       {active === "products" && <VendorProductsPage />}
       {active === "orders" && <VendorOrdersPage />}
       {active === "payouts" && <VendorPayoutsPage />}

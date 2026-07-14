@@ -88,7 +88,7 @@ export function VendorOnboardingPage({
               </div>
               <VendorStatusBadge status={doc.status} />
             </div>
-            <label className="mt-3 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-green-200 px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50">
+            <label className="mt-3 flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-green-200 px-3 text-sm font-semibold text-green-700 hover:bg-green-50">
               <FileUp size={14} />
               Upload
               <input
@@ -159,7 +159,7 @@ export function VendorOnboardingPage({
                 onClick={() => {
                   if (index < step || (index === 1 && businessComplete) || (index === 2 && businessComplete && missingDocs.length === 0)) setStep(index)
                 }}
-                className={`rounded-xl border p-4 text-left transition-colors ${step === index ? "border-green-600 bg-green-50" : index < step ? "border-emerald-100 bg-emerald-50" : "border-gray-100 bg-white"}`}
+                className={`min-h-11 rounded-xl border p-4 text-left transition-colors ${step === index ? "border-green-600 bg-green-50" : index < step ? "border-emerald-100 bg-emerald-50" : "border-gray-100 bg-white"}`}
               >
                 <span className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-black ${index < step ? "bg-emerald-600 text-white" : step === index ? "bg-green-700 text-white" : "bg-gray-100 text-gray-500"}`}>
                   {index < step ? <CheckCircle size={14} /> : index + 1}
@@ -179,7 +179,7 @@ export function VendorOnboardingPage({
           <button
             onClick={() => setStep((current) => Math.max(0, current - 1))}
             disabled={step === 0}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 px-5 py-3 text-sm font-bold text-green-700 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-green-200 px-5 py-3 text-sm font-bold text-green-700 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <ArrowLeft size={15} />
             Back
@@ -188,7 +188,7 @@ export function VendorOnboardingPage({
             <button
               onClick={() => setStep((current) => Math.min(2, current + 1))}
               disabled={!canGoNext}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-bold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-bold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Continue
               <ArrowRight size={15} />
@@ -197,7 +197,7 @@ export function VendorOnboardingPage({
             <button
               onClick={submit}
               disabled={!canSubmit || saving}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-bold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-bold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Send size={15} />
               {saving ? "Submitting..." : "Submit for review"}
@@ -282,7 +282,7 @@ export function VendorOnboardingPage({
                   </div>
                   <VendorStatusBadge status={doc.status} />
                 </div>
-                <label className="mt-3 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-green-200 px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50">
+                <label className="mt-3 flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-green-200 px-3 text-sm font-semibold text-green-700 hover:bg-green-50">
                   <FileUp size={14} />
                   Upload
                   <input
@@ -304,7 +304,7 @@ export function VendorOnboardingPage({
         <button
           onClick={submit}
           disabled={!canSubmit || saving}
-          className="inline-flex items-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-bold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-bold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Send size={15} />
           {saving ? "Submitting..." : "Submit for review"}

@@ -26,7 +26,7 @@ export function VendorShell({
 }) {
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-gray-50">
-      <div className="mx-auto max-w-7xl px-4 py-6">
+      <div className="mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6">
         <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <div className="flex items-center gap-2 text-sm font-semibold text-green-700">
@@ -35,20 +35,20 @@ export function VendorShell({
             </div>
             <h1 className="mt-1 text-2xl font-black text-gray-900">{storeName}</h1>
           </div>
-          {status}
+          <div className="self-start md:self-auto">{status}</div>
         </div>
 
         <div className="flex flex-col gap-6 md:flex-row">
-          <aside className="md:w-64 md:shrink-0">
+          <aside className="hidden min-w-0 md:block md:w-64 md:shrink-0">
             <div className="rounded-xl border border-green-100 bg-white p-3">
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  className={`mb-1 flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition-colors ${active === item.id ? "bg-green-700 text-white" : "text-gray-600 hover:bg-green-50 hover:text-green-700"}`}
+                  className={`mb-1 flex w-full items-center justify-start gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition-colors ${active === item.id ? "bg-green-700 text-white" : "text-gray-600 hover:bg-green-50 hover:text-green-700"}`}
                 >
-                  {item.icon}
-                  {item.label}
+                  <span>{item.icon}</span>
+                  <span>{item.label}</span>
                 </button>
               ))}
             </div>

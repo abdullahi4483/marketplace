@@ -24,7 +24,7 @@ export function BuyerCartPage() {
         <AppEmptyState
           title="Your cart is empty"
           body="Add products from verified Zamani Marketplace vendors to start checkout."
-          action={<Link to="/products" className="rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white">Browse products</Link>}
+          action={<Link to="/products" className="inline-flex min-h-11 items-center rounded-xl bg-green-700 px-4 text-sm font-bold text-white">Browse products</Link>}
         />
       </div>
     )
@@ -32,12 +32,12 @@ export function BuyerCartPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6">
-      <div className="mb-5 flex items-center justify-between">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-black text-gray-900">Cart</h1>
           <p className="text-sm text-gray-500">{cart.length} line items grouped by vendor</p>
         </div>
-        <button onClick={clearCart} className="rounded-xl border border-red-200 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50">Clear cart</button>
+        <button onClick={clearCart} className="min-h-11 self-start rounded-xl border border-red-200 px-4 text-sm font-bold text-red-600 hover:bg-red-50 sm:self-auto">Clear cart</button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
@@ -50,19 +50,19 @@ export function BuyerCartPage() {
               </div>
               <div className="divide-y divide-green-50">
                 {items.map((item) => (
-                  <div key={`${item.product.id}-${item.variantId ?? "default"}`} className="flex gap-4 p-4">
+                  <div key={`${item.product.id}-${item.variantId ?? "default"}`} className="flex flex-col gap-4 p-4 sm:flex-row">
                     <img src={item.product.images[0]} alt="" className="h-20 w-20 rounded-xl object-cover" />
                     <div className="min-w-0 flex-1">
                       <Link to={`/products/${item.product.id}`} className="font-bold text-gray-900 hover:text-green-700">{item.product.name}</Link>
                       {item.variantId && <p className="text-xs text-gray-500">Variant: {item.product.variants?.find((variant) => variant.id === item.variantId)?.value ?? item.variantId}</p>}
                       <p className="mt-1 font-black text-green-700">{formatNaira(item.product.price)}</p>
                     </div>
-                    <div className="flex flex-col items-end justify-between gap-2">
-                      <button onClick={() => removeFromCart(item.product.id)} className="rounded-lg p-2 text-red-600 hover:bg-red-50" aria-label="Remove item"><Trash2 size={16} /></button>
+                    <div className="flex flex-row items-center justify-between gap-3 sm:flex-col sm:items-end">
+                      <button onClick={() => removeFromCart(item.product.id)} className="flex h-11 w-11 items-center justify-center rounded-lg text-red-600 hover:bg-red-50" aria-label="Remove item"><Trash2 size={16} /></button>
                       <div className="flex items-center rounded-xl border border-green-200">
-                        <button onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)} className="p-2 text-green-700"><Minus size={15} /></button>
+                        <button onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)} className="flex h-11 w-11 items-center justify-center text-green-700"><Minus size={15} /></button>
                         <span className="w-10 text-center text-sm font-black">{item.quantity}</span>
-                        <button onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)} className="p-2 text-green-700"><Plus size={15} /></button>
+                        <button onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)} className="flex h-11 w-11 items-center justify-center text-green-700"><Plus size={15} /></button>
                       </div>
                     </div>
                   </div>
@@ -76,7 +76,7 @@ export function BuyerCartPage() {
           subtotal={cartTotal}
           delivery={delivery}
           serviceFee={serviceFee}
-          action={<button onClick={() => navigate("/checkout")} className="w-full rounded-xl bg-green-700 px-4 py-3 font-black text-white hover:bg-green-800">Continue to checkout</button>}
+          action={<button onClick={() => navigate("/checkout")} className="min-h-11 w-full rounded-xl bg-green-700 px-4 py-3 font-black text-white hover:bg-green-800">Continue to checkout</button>}
         />
       </div>
     </div>

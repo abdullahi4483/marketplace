@@ -10,6 +10,6 @@ export function VendorField({ label, children, hint }: { label: string; children
   )
 }
 
-export const vendorInputClass = "w-full rounded-xl border-2 border-green-200 bg-green-50/30 px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-green-600"
-export const vendorSelectClass = "w-full rounded-xl border-2 border-green-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-green-600"
+export const vendorInputClass = "min-h-11 w-full rounded-xl border-2 border-green-200 bg-green-50/30 px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-green-600"
+export const vendorSelectClass = "min-h-11 w-full rounded-xl border-2 border-green-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-green-600"
 export const vendorTextareaClass = "min-h-28 w-full rounded-xl border-2 border-green-200 bg-green-50/30 px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-green-600"

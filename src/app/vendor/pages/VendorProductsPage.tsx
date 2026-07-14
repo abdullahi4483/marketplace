@@ -102,8 +102,8 @@ export function VendorProductsPage() {
       header: "Actions",
       render: (product) => (
         <div className="flex gap-1">
-          <button onClick={() => openEdit(product)} className="rounded-lg p-2 text-green-700 hover:bg-green-50"><Edit size={14} /></button>
-          <button onClick={() => void remove(product.id)} className="rounded-lg p-2 text-red-600 hover:bg-red-50"><Trash2 size={14} /></button>
+          <button onClick={() => openEdit(product)} aria-label={`Edit ${product.name}`} className="flex h-11 w-11 items-center justify-center rounded-lg text-green-700 hover:bg-green-50"><Edit size={14} /></button>
+          <button onClick={() => void remove(product.id)} aria-label={`Delete ${product.name}`} className="flex h-11 w-11 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"><Trash2 size={14} /></button>
         </div>
       ),
     },
@@ -120,7 +120,7 @@ export function VendorProductsPage() {
           <p className="mt-1 text-sm text-gray-500">Create, update, delete, and bulk import vendor catalog items.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border-2 border-green-700 px-4 py-2.5 text-sm font-bold text-green-700 hover:bg-green-50">
+          <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border-2 border-green-700 px-4 text-sm font-bold text-green-700 hover:bg-green-50">
             <FileUp size={15} />
             Bulk upload
             <input
@@ -135,7 +135,7 @@ export function VendorProductsPage() {
               }}
             />
           </label>
-          <button onClick={openCreate} className="inline-flex items-center gap-2 rounded-xl bg-green-700 px-4 py-2.5 text-sm font-bold text-white hover:bg-green-800">
+          <button onClick={openCreate} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-green-700 px-4 text-sm font-bold text-white hover:bg-green-800">
             <Plus size={15} />
             Add product
           </button>
@@ -147,7 +147,7 @@ export function VendorProductsPage() {
       <VendorDataTable
         columns={columns}
         rows={products}
-        empty={<VendorEmptyState title="No products yet" body="Create your first product or use bulk upload to import an existing catalog." action={<button onClick={openCreate} className="rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white">Add product</button>} />}
+        empty={<VendorEmptyState title="No products yet" body="Create your first product or use bulk upload to import an existing catalog." action={<button onClick={openCreate} className="min-h-11 rounded-xl bg-green-700 px-4 text-sm font-bold text-white">Add product</button>} />}
       />
 
       <VendorModal
@@ -156,8 +156,8 @@ export function VendorProductsPage() {
         onClose={() => setModalOpen(false)}
         footer={(
           <>
-            <button onClick={() => setModalOpen(false)} className="rounded-xl border border-green-200 px-4 py-2 text-sm font-bold text-green-700 hover:bg-green-50">Cancel</button>
-            <button onClick={() => void save()} disabled={!draft.name || !draft.sku} className="rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white hover:bg-green-800 disabled:opacity-50">Save product</button>
+            <button onClick={() => setModalOpen(false)} className="min-h-11 rounded-xl border border-green-200 px-4 text-sm font-bold text-green-700 hover:bg-green-50">Cancel</button>
+            <button onClick={() => void save()} disabled={!draft.name || !draft.sku} className="min-h-11 rounded-xl bg-green-700 px-4 text-sm font-bold text-white hover:bg-green-800 disabled:opacity-50">Save product</button>
           </>
         )}
       >

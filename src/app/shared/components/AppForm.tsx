@@ -10,6 +10,6 @@ export function AppField({ label, children, hint }: { label: string; children: R
   )
 }
 
-export const appInputClass = "w-full rounded-xl border-2 border-green-200 bg-green-50/30 px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-green-600"
-export const appSelectClass = "w-full rounded-xl border-2 border-green-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-green-600"
+export const appInputClass = "min-h-11 w-full rounded-xl border-2 border-green-200 bg-green-50/30 px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-green-600"
+export const appSelectClass = "min-h-11 w-full rounded-xl border-2 border-green-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-green-600"
 export const appTextareaClass = "min-h-28 w-full rounded-xl border-2 border-green-200 bg-green-50/30 px-4 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-green-600"

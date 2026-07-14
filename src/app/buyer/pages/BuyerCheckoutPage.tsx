@@ -77,7 +77,7 @@ export function BuyerCheckoutPage() {
   }
 
   if (cart.length === 0) {
-    return <div className="mx-auto max-w-4xl px-4 py-10"><AppEmptyState title="No items to checkout" body="Your cart is empty." action={<Link to="/products" className="rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white">Browse products</Link>} /></div>
+    return <div className="mx-auto max-w-4xl px-4 py-10"><AppEmptyState title="No items to checkout" body="Your cart is empty." action={<Link to="/products" className="inline-flex min-h-11 items-center rounded-xl bg-green-700 px-4 text-sm font-bold text-white">Browse products</Link>} /></div>
   }
   if (loading) return <div className="mx-auto max-w-7xl px-4 py-6"><AppLoadingState label="Loading checkout" /></div>
 

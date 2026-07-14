@@ -32,14 +32,14 @@ export function BuyerProductCard({ product }: { product: BuyerProduct }) {
           <button
             onClick={() => addToCart(product)}
             disabled={!product.inStock}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-green-700 px-3 py-2 text-sm font-bold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl bg-green-700 px-3 text-sm font-bold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <ShoppingCart size={14} />
             Add
           </button>
           <button
             onClick={() => void toggleWishlist(product.id)}
-            className={`rounded-xl border px-3 py-2 ${wished ? "border-red-200 bg-red-50 text-red-600" : "border-green-200 text-green-700 hover:bg-green-50"}`}
+            className={`flex h-11 w-11 items-center justify-center rounded-xl border ${wished ? "border-red-200 bg-red-50 text-red-600" : "border-green-200 text-green-700 hover:bg-green-50"}`}
             aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart size={16} className={wished ? "fill-red-500" : ""} />

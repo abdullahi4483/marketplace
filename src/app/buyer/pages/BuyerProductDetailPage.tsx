@@ -54,9 +54,9 @@ export function BuyerProductDetailPage() {
             </div>
           </div>
           {product.images.length > 1 && (
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
               {product.images.map((image, index) => (
-                <button key={image} onClick={() => setActiveImage(index)} className={`h-20 w-20 overflow-hidden rounded-xl border-2 ${activeImage === index ? "border-green-700" : "border-green-100"}`}>
+                <button key={image} onClick={() => setActiveImage(index)} className={`h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 ${activeImage === index ? "border-green-700" : "border-green-100"}`}>
                   <img src={image} alt="" className="h-full w-full object-cover" />
                 </button>
               ))}
@@ -67,11 +67,11 @@ export function BuyerProductDetailPage() {
         <aside className="space-y-4">
           <div className="rounded-xl border border-green-100 bg-white p-5">
             <div className="flex items-start justify-between gap-3">
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-bold uppercase text-green-700">{product.category}</p>
-                <h1 className="mt-1 text-3xl font-black text-gray-900">{product.name}</h1>
+                <h1 className="mt-1 break-words text-2xl font-black text-gray-900 sm:text-3xl">{product.name}</h1>
               </div>
-              <button onClick={() => void toggleWishlist(product.id)} className={`rounded-xl border p-3 ${wished ? "border-red-200 bg-red-50 text-red-600" : "border-green-200 text-green-700 hover:bg-green-50"}`}>
+              <button onClick={() => void toggleWishlist(product.id)} className={`flex h-11 w-11 items-center justify-center rounded-xl border ${wished ? "border-red-200 bg-red-50 text-red-600" : "border-green-200 text-green-700 hover:bg-green-50"}`}>
                 <Heart className={wished ? "fill-red-500" : ""} size={20} />
               </button>
             </div>
@@ -84,7 +84,7 @@ export function BuyerProductDetailPage() {
                 <p className="mb-2 text-sm font-bold text-gray-700">Variant</p>
                 <div className="flex flex-wrap gap-2">
                   {product.variants.map((variant) => (
-                    <button key={variant.id} onClick={() => setVariantId(variant.id)} className={`rounded-xl border px-4 py-2 text-sm font-bold ${variantId === variant.id ? "border-green-700 bg-green-50 text-green-700" : "border-green-100 text-gray-600 hover:border-green-300"}`}>
+                    <button key={variant.id} onClick={() => setVariantId(variant.id)} className={`min-h-11 rounded-xl border px-4 text-sm font-bold ${variantId === variant.id ? "border-green-700 bg-green-50 text-green-700" : "border-green-100 text-gray-600 hover:border-green-300"}`}>
                       {variant.value}
                     </button>
                   ))}
@@ -92,15 +92,15 @@ export function BuyerProductDetailPage() {
               </div>
             )}
 
-            <div className="mt-5 flex items-center justify-between rounded-xl bg-green-50 p-3">
+            <div className="mt-5 flex flex-col gap-3 rounded-xl bg-green-50 p-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-bold text-gray-900">{product.inStock ? `${product.stock} in stock` : "Out of stock"}</p>
                 <p className="text-xs text-gray-500">Quantity</p>
               </div>
               <div className="flex items-center rounded-xl border border-green-200 bg-white">
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2 text-green-700"><Minus size={16} /></button>
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="flex h-11 w-11 items-center justify-center text-green-700"><Minus size={16} /></button>
                 <span className="w-10 text-center text-sm font-black">{quantity}</span>
-                <button onClick={() => setQuantity(Math.min(product.stock, quantity + 1))} className="p-2 text-green-700"><Plus size={16} /></button>
+                <button onClick={() => setQuantity(Math.min(product.stock, quantity + 1))} className="flex h-11 w-11 items-center justify-center text-green-700"><Plus size={16} /></button>
               </div>
             </div>
 
@@ -118,12 +118,12 @@ export function BuyerProductDetailPage() {
             <div className="flex items-center gap-3">
               <img src={product.vendor.avatar} alt="" className="h-12 w-12 rounded-xl object-cover" />
               <div className="min-w-0 flex-1">
-                <p className="font-black text-gray-900">{product.vendor.name}</p>
-                <div className="mt-1 flex items-center gap-1 text-xs text-gray-500"><MapPin size={12} />{product.vendor.location}</div>
+                <p className="break-words font-black text-gray-900">{product.vendor.name}</p>
+                <div className="mt-1 flex items-center gap-1 text-xs text-gray-500"><MapPin className="shrink-0" size={12} /><span className="break-words">{product.vendor.location}</span></div>
               </div>
               {product.vendor.verified && <AppStatusBadge status="verified" label="Verified" />}
             </div>
-            <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <div className="mt-4 grid gap-3 text-sm md:grid-cols-2">
               <div className="rounded-xl bg-green-50 p-3"><Store size={16} className="mb-1 text-green-700" />Vendor rating {product.vendor.rating}</div>
               <div className="rounded-xl bg-green-50 p-3"><ShieldCheck size={16} className="mb-1 text-green-700" />Buyer protection</div>
             </div>

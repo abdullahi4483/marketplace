@@ -1,0 +1,36 @@
+/* Global responsive helpers */
+
+html { box-sizing: border-box; -webkit-text-size-adjust: 100%; }
+*, *::before, *::after { box-sizing: inherit; }
+
+html, body, #root { min-width: 0; overflow-x: clip; }
+
+/* Make media scale down on small screens without overriding icon sizing. */
+img, picture, video, canvas { max-width: 100%; height: auto; display: block; }
+
+/* Ensure form controls don't overflow */
+input, textarea, select, button { max-width: 100%; }
+button, a, input, select, textarea { overflow-wrap: anywhere; }
+
+/* Small viewport adjustments */
+@media (max-width: 640px) {
+	:root { --font-size: 15px; }
+}
+
+@media (max-width: 767px) {
+	button,
+	input,
+	select,
+	textarea,
+	[role="button"] {
+		min-height: 44px;
+	}
+
+	a.inline-flex,
+	a.flex {
+		min-height: 44px;
+	}
+}
+
+/* Utility: collapse long text in cards/lists on mobile */
+.truncate-mobile { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

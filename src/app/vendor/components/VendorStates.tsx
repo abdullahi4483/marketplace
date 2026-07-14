@@ -29,7 +29,7 @@ export function VendorErrorState({ title = "Something went wrong", body, onRetry
           <h3 className="font-bold text-red-900">{title}</h3>
           <p className="mt-1 text-sm text-red-700">{body}</p>
           {onRetry && (
-            <button onClick={onRetry} className="mt-3 rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700">
+            <button onClick={onRetry} className="mt-3 min-h-11 rounded-lg bg-red-600 px-4 text-sm font-semibold text-white hover:bg-red-700">
               Try again
             </button>
           )}

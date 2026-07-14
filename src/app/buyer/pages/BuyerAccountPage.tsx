@@ -69,7 +69,7 @@ export function BuyerAccountPage() {
   ], [])
 
   if (!user) {
-    return <div className="mx-auto max-w-4xl px-4 py-10"><AppEmptyState title="Login required" body="Login to view orders, addresses, payments, and profile settings." action={<button onClick={() => navigate("/auth")} className="rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white">Login</button>} /></div>
+    return <div className="mx-auto max-w-4xl px-4 py-10"><AppEmptyState title="Login required" body="Login to view orders, addresses, payments, and profile settings." action={<button onClick={() => navigate("/auth")} className="min-h-11 rounded-xl bg-green-700 px-4 text-sm font-bold text-white">Login</button>} /></div>
   }
   if (loading) return <div className="mx-auto max-w-7xl px-4 py-6"><AppLoadingState label="Loading buyer account" /></div>
   if (error) return <div className="mx-auto max-w-7xl px-4 py-6"><AppErrorState body={error} onRetry={load} /></div>
@@ -81,9 +81,9 @@ export function BuyerAccountPage() {
         <h1 className="text-2xl font-black text-gray-900">{user.name}</h1>
       </div>
       <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
-        <aside className="h-fit rounded-xl border border-green-100 bg-white p-3">
+        <aside className="h-fit overflow-x-auto rounded-xl border border-green-100 bg-white p-2 lg:overflow-visible lg:p-3">
           {(["overview", "orders", "addresses", "payments", "profile", "wishlist"] as AccountTab[]).map((item) => (
-            <Link key={item} to={`/dashboard?tab=${item}`} className={`mb-1 block rounded-xl px-3 py-2.5 text-sm font-bold capitalize ${tab === item ? "bg-green-700 text-white" : "text-gray-600 hover:bg-green-50 hover:text-green-700"}`}>{item}</Link>
+            <Link key={item} to={`/dashboard?tab=${item}`} className={`mb-0 mr-1 inline-flex min-h-11 shrink-0 items-center rounded-xl px-3 text-sm font-bold capitalize lg:mb-1 lg:mr-0 lg:flex ${tab === item ? "bg-green-700 text-white" : "text-gray-600 hover:bg-green-50 hover:text-green-700"}`}>{item}</Link>
           ))}
         </aside>
 
@@ -121,7 +121,7 @@ export function BuyerAccountPage() {
                   <AppField label="LGA"><input value={draftAddress.lga} onChange={(event) => setDraftAddress({ ...draftAddress, lga: event.target.value })} className={appInputClass} /></AppField>
                   <div className="md:col-span-2"><AppField label="Address"><input value={draftAddress.address} onChange={(event) => setDraftAddress({ ...draftAddress, address: event.target.value })} className={appInputClass} /></AppField></div>
                 </div>
-                <button onClick={async () => { await buyerApi.saveAddress(draftAddress); await load() }} className="mt-4 rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white">Save address</button>
+                <button onClick={async () => { await buyerApi.saveAddress(draftAddress); await load() }} className="mt-4 min-h-11 rounded-xl bg-green-700 px-4 text-sm font-bold text-white">Save address</button>
               </div>
             </div>
           )}
@@ -142,7 +142,7 @@ export function BuyerAccountPage() {
                   <AppField label="Type"><select value={draftPayment.type} onChange={(event) => setDraftPayment({ ...draftPayment, type: event.target.value as BuyerPaymentMethod["type"] })} className={appSelectClass}>{["card", "bank", "ussd", "delivery"].map((type) => <option key={type}>{type}</option>)}</select></AppField>
                   <AppField label="Label"><input value={draftPayment.label} onChange={(event) => setDraftPayment({ ...draftPayment, label: event.target.value })} className={appInputClass} /></AppField>
                 </div>
-                <button onClick={async () => { await buyerApi.savePaymentMethod(draftPayment); await load() }} className="mt-4 rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white">Save payment</button>
+                <button onClick={async () => { await buyerApi.savePaymentMethod(draftPayment); await load() }} className="mt-4 min-h-11 rounded-xl bg-green-700 px-4 text-sm font-bold text-white">Save payment</button>
               </div>
             </div>
           )}
@@ -155,12 +155,12 @@ export function BuyerAccountPage() {
                 <AppField label="Phone"><input value={draftUser.phone ?? ""} onChange={(event) => setDraftUser({ ...draftUser, phone: event.target.value })} className={appInputClass} /></AppField>
                 <AppField label="LGA"><input value={draftUser.lga ?? ""} onChange={(event) => setDraftUser({ ...draftUser, lga: event.target.value })} className={appInputClass} /></AppField>
               </div>
-              <button onClick={() => void updateProfile(draftUser)} className="mt-4 rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white">Save profile</button>
+              <button onClick={() => void updateProfile(draftUser)} className="mt-4 min-h-11 rounded-xl bg-green-700 px-4 text-sm font-bold text-white">Save profile</button>
             </div>
           )}
 
           {tab === "wishlist" && (
-            wishlistProducts.length > 0 ? <div className="grid grid-cols-2 gap-4 md:grid-cols-3">{wishlistProducts.map((product) => <BuyerProductCard key={product.id} product={product} />)}</div> : <AppEmptyState title="Wishlist is empty" body="Save products you want to revisit later." />
+            wishlistProducts.length > 0 ? <div className="grid gap-4 md:grid-cols-3">{wishlistProducts.map((product) => <BuyerProductCard key={product.id} product={product} />)}</div> : <AppEmptyState title="Wishlist is empty" body="Save products you want to revisit later." />
           )}
         </section>
       </div>
@@ -233,14 +233,14 @@ export function BuyerOrderDetailPage() {
             <h2 className="font-black text-gray-900">Items</h2>
             <div className="mt-4 space-y-4">
               {order.items.map((item) => (
-                <div key={item.id} className="flex items-center gap-3">
+                <div key={item.id} className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
                   <img src={item.productImage} alt="" className="h-14 w-14 rounded-xl object-cover" />
                   <div className="min-w-0 flex-1">
                     <p className="font-bold text-gray-900">{item.productName}</p>
                     <p className="text-xs text-gray-500">Qty {item.quantity} · {item.vendorName}</p>
                   </div>
-                  <span className="font-black text-green-700">{formatNaira(item.amount)}</span>
-                  <button onClick={() => setReviewing(item)} className="rounded-xl border border-green-200 px-3 py-2 text-sm font-bold text-green-700 hover:bg-green-50">Review</button>
+                  <span className="ml-auto font-black text-green-700">{formatNaira(item.amount)}</span>
+                  <button onClick={() => setReviewing(item)} className="min-h-11 rounded-xl border border-green-200 px-3 text-sm font-bold text-green-700 hover:bg-green-50">Review</button>
                 </div>
               ))}
             </div>
@@ -269,8 +269,8 @@ export function BuyerOrderDetailPage() {
               <AppField label="Comment"><textarea value={review.comment} onChange={(event) => setReview({ ...review, comment: event.target.value })} className={appTextareaClass} /></AppField>
             </div>
             <div className="mt-5 flex justify-end gap-2">
-              <button onClick={() => setReviewing(null)} className="rounded-xl border border-green-200 px-4 py-2 text-sm font-bold text-green-700">Cancel</button>
-              <button onClick={() => void submitReview()} className="rounded-xl bg-green-700 px-4 py-2 text-sm font-bold text-white">Submit review</button>
+              <button onClick={() => setReviewing(null)} className="min-h-11 rounded-xl border border-green-200 px-4 text-sm font-bold text-green-700">Cancel</button>
+              <button onClick={() => void submitReview()} className="min-h-11 rounded-xl bg-green-700 px-4 text-sm font-bold text-white">Submit review</button>
             </div>
           </div>
         </div>
